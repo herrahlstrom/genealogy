@@ -1,0 +1,10 @@
+<Project>
+  
+  <Import Project="../Directory.Build.props" />
+
+  <ItemGroup>
+    <InternalsVisibleToSuffix Include=".Tests" />
+  </ItemGroup>
+
+</Project>
+  
