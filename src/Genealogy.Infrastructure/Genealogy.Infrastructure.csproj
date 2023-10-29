@@ -1,7 +1,43 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\Genealogy.Domain\Genealogy.Domain.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+      <None Remove="Data\Migration\*.sql" />
+      <EmbeddedResource Include="Data\Migration\*.sql" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Data\Migration\Sqlite\0001_CreateTable_EventMembers.sql" />
+      <None Remove="Data\Migration\Sqlite\0001_CreateTable_Events.sql" />
+      <None Remove="Data\Migration\Sqlite\0001_CreateTable_EventSources.sql" />
+      <None Remove="Data\Migration\Sqlite\0001_CreateTable_Families.sql" />
+      <None Remove="Data\Migration\Sqlite\0001_CreateTable_FamilyMembers.sql" />
+      <None Remove="Data\Migration\Sqlite\0001_CreateTable_Media.sql" />
+      <None Remove="Data\Migration\Sqlite\0001_CreateTable_MediaReference.sql" />
+      <None Remove="Data\Migration\Sqlite\0001_CreateTable_Sources.sql" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Data\Migration\Sqlite\0001_CreateTable_MediaReference.sql" />
+      <EmbeddedResource Include="Data\Migration\Sqlite\0001_CreateTable_EventSources.sql" />
+      <EmbeddedResource Include="Data\Migration\Sqlite\0001_CreateTable_Events.sql" />
+      <EmbeddedResource Include="Data\Migration\Sqlite\0001_CreateTable_Families.sql" />
+      <EmbeddedResource Include="Data\Migration\Sqlite\0001_CreateTable_FamilyMembers.sql" />
+      <EmbeddedResource Include="Data\Migration\Sqlite\0001_CreateTable_Media.sql" />
+      <EmbeddedResource Include="Data\Migration\Sqlite\0001_CreateTable_Sources.sql" />
+      <EmbeddedResource Include="Data\Migration\Sqlite\0001_CreateTable_EventMembers.sql" />
+      <EmbeddedResource Include="Data\Migration\Sqlite\0001_CreateTable_Persons.sql" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="dbup-sqlite" Version="5.0.37" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.13" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.13" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Genealogy.Domain\Genealogy.Domain.csproj" />
+        <ProjectReference Include="..\Genealogy.Shared\Genealogy.Shared.csproj" />
+    </ItemGroup>
 
 </Project>
