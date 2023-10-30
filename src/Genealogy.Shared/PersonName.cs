@@ -149,7 +149,24 @@ public class PersonName
 
     private bool TryParseNickName(string firstName, out string nickName)
     {
-        nickName = default!;
-        return false;
+        char[] quotationSigns = new[] { '"', '\'' };
+        int numberOfQuotes = firstName.Count(x => quotationSigns.Contains(x));
+
+        if (numberOfQuotes == 0)
+        {
+            nickName = default;
+            return false;
+        }
+        else if (numberOfQuotes == 2)
+        {
+            var p1 = firstName.IndexOfAny(quotationSigns);
+            var p2 = firstName.IndexOfAny(quotationSigns, p1 + 1);
+            nickName = firstName.Substring(p1 + 1, p2 - p1 - 1);
+            return true;
+        }
+        else
+        {
+            throw new ArgumentException($"Invalid number of quotation in name: \"{firstName}\"");
+        }
     }
 }

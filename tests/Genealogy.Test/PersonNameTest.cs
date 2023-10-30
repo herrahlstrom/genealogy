@@ -15,6 +15,16 @@ public class PersonNameTest
 
         action.Should().Throw<ArgumentException>();
     }
+    
+    [TestMethod]
+    public void Nickname_ShouldParse()
+    {
+        string input = "Anna Maria Katarina* \"Kata\" /Carlberg/";
+        var expected = new Expected(FirstName: "Anna Maria Katarina* \"Kata\"", GivenName: "Katarina", LastName: "Carlberg", FullName: "Anna Maria Katarina* \"Kata\" /Carlberg/", NickName:"Kata", DisplayName: "Kata Carlberg");
+
+        var name = new PersonName(input);
+        name.Should().BeEquivalentTo(expected);
+    }
 
     [TestMethod]
     public void PairBasic_ShouldParse()
@@ -120,5 +130,5 @@ public class PersonNameTest
         name.Should().BeEquivalentTo(expected);
     }
 
-    private record Expected(string FirstName, string GivenName, string LastName, string FullName, string DisplayName);
+    private record Expected(string FirstName, string GivenName, string LastName, string FullName, string DisplayName, string NickName = "");
 }
