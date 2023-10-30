@@ -1,24 +1,20 @@
-﻿using System.Diagnostics;
-
-namespace Genealogy.Domain.Data.Entities;
-
+﻿namespace Genealogy.Domain.Data.Entities;
 
 public class MediaEntity
 {
-    public required Guid Id { get; set; }
+    public required Guid Id { get; init; }
     public required MediaType Type { get; set; }
-    public string Path { get; set; } = null!;
-    public long Size { get; set; }
+    public required string Path { get; set; }
+    public long? Size { get; set; }
     public string? Title { get; set; }
     public string? FileCrc { get; set; }
     public string? Notes { get; set; }
+    public ICollection<MediaMeta> Meta { get; set; } = default!;
 }
 
-
-[DebuggerDisplay("{Key} {Value}")]
 public class MediaMeta
 {
-    public required Guid MediaId { get; set; }
-    public required string Key { get; set; }
+    public required Guid MediaId { get; init; }
+    public required string Key { get; init; }
     public required string Value { get; set; }
 }

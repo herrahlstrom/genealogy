@@ -8,7 +8,7 @@ public class EventEntity
 {
     public string? Date { get; set; }
     public string? EndDate { get; set; }
-    public required Guid Id { get; set; }
+    public required Guid Id { get; init; }
     public string? Location { get; set; }
     public string? Name { get; set; }
     public string Notes { get; set; } = "";

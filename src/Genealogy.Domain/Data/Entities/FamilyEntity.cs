@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
-
-namespace Genealogy.Domain.Data.Entities;
+﻿namespace Genealogy.Domain.Data.Entities;
 
 public class FamilyEntity
 {
-    public required Guid Id { get; set; }
+    public required Guid Id { get; init; }
     public string Notes { get; set; } = "";
 }

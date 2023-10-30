@@ -33,5 +33,9 @@ internal class MediaConfiguration : IEntityTypeConfiguration<MediaEntity>
 
         builder.Property(x => x.Notes)
                .HasColumnName("notes");
+
+        builder.HasMany<MediaMeta>(x => x.Meta)
+               .WithOne()
+               .HasForeignKey(x => x.MediaId);
     }
 }

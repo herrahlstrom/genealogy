@@ -1,4 +1,5 @@
 ﻿CREATE TABLE "families" (
-    "id" TEXT NOT NULL CONSTRAINT "PK_families" PRIMARY KEY,
-    "notes" TEXT NOT NULL
+    "id" TEXT NOT NULL,
+    "notes" TEXT NOT NULL,
+    CONSTRAINT "PK_families" PRIMARY KEY ("id")
 );

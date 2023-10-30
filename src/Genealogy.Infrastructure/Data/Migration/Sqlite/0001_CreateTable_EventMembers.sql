@@ -1,8 +1,8 @@
 ﻿CREATE TABLE "event_members" (
+    "eventId" TEXT NOT NULL,
     "entityId" TEXT NOT NULL,
-    "lifeStoryId" TEXT NOT NULL,
-    "type" INTEGER NULL,
+    "type" INTEGER NOT NULL,
     "date" TEXT NULL,
     "endDate" TEXT NULL,
-    CONSTRAINT "PK_event_members" PRIMARY KEY ("entityId", "lifeStoryId")
+    CONSTRAINT "PK_event_members" PRIMARY KEY ("eventId", "entityId")
 );

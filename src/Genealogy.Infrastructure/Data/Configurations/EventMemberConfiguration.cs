@@ -11,13 +11,13 @@ internal class EventMemberConfiguration : IEntityTypeConfiguration<EventMember>
     public void Configure(EntityTypeBuilder<EventMember> builder)
     {
         builder.ToTable("event_members")
-               .HasKey(x => new { x.EntityId, x.LifeStoryId });
+               .HasKey(x => new { x.EventId, x.EntityId });
 
         builder.Property(x => x.EntityId)
                .HasColumnName("entityId");
 
-        builder.Property(x => x.LifeStoryId)
-               .HasColumnName("lifeStoryId");
+        builder.Property(x => x.EventId)
+               .HasColumnName("eventId");
 
         builder.Property(x => x.Type)
                .HasColumnName("type");
