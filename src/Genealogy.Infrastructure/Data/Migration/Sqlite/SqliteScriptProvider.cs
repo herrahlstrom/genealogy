@@ -36,7 +36,7 @@ internal partial class SqliteScriptProvider : IScriptProvider
     [GeneratedRegex("Migration\\.Sqlite\\.(?<name>\\d+.+)\\.sql$")]
     private static partial Regex ScriptNameRegex();
 
-    private string GetScriptName(string resourceName)
+    private static string GetScriptName(string resourceName)
     {
         var m = ScriptNameRegex().Match(resourceName);
         if (m.Success)

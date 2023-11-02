@@ -9,7 +9,7 @@ public class PersonNameTest
     [TestMethod]
     [DataRow("Anna Maria /Andersson")]
     [DataRow("Anna Maria /Andersson//")]
-    public void InvalidSingleNames_ShouldThrow(string input)
+    public void InvalidLastNameIndicators_ShouldThrow(string input)
     {
         Action action = () => _ = new PersonName(input);
 

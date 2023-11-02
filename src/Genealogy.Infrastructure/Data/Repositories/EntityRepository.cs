@@ -20,4 +20,9 @@ internal class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEnt
     {
         return _dbSet.FindAsync(keyValues);
     }
+
+    public async Task<IReadOnlyCollection<TEntity>> GetAllAsync()
+    {
+        return await _dbSet.ToListAsync();
+    }
 }

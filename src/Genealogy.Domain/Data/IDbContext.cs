@@ -3,12 +3,12 @@ using Genealogy.Domain.Data.Repositories;
 
 namespace Genealogy.Domain.Data;
 
-public interface IDbContextFactory
+public interface IUnitOfWorkFactory
 {
-    IDbContext CreateDbContext();
+    IUnitOfWork CreateDbContext();
 }
 
-public interface IDbContext : IDisposable
+public interface IUnitOfWork : IDisposable
 {
     IEntityRepository<PersonEntity> PersonRepository { get; }
     IEntityRepository<EventEntity> EventRepository { get; }
@@ -21,8 +21,6 @@ public interface IDbContext : IDisposable
     IEntityRepository<EventSources> EventSourcesRepository { get; }
     IEntityRepository<MediaReference> MediaReferencesRepository { get; }
     
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-
-    public void MigrateDatabase();
+    Task<int> CommitAsync(CancellationToken cancellationToken = default);
 }
 

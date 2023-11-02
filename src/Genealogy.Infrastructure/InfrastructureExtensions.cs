@@ -23,7 +23,8 @@ public static class InfrastructureExtensions
         {
             services.AddDbContextFactory<GenealogyDbContext>(options => options.UseInMemoryDatabase("Genealogy"));
         }
-        services.AddSingleton<IDbContextFactory, GenealogyDbContextFactory>();
+        services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }

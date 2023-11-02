@@ -14,6 +14,8 @@ public interface IEntityRepository<TEntity> where TEntity : class
         }
     }
     ValueTask<TEntity?> FindAsync(params object?[]? keyValues);
+
+    Task<IReadOnlyCollection<TEntity>> GetAllAsync();
 }
 
 public interface IPersonRepository
