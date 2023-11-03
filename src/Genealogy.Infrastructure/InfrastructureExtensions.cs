@@ -1,12 +1,10 @@
 ﻿using DbUp.Engine;
 using Genealogy.Domain.Data;
 using Genealogy.Infrastructure.Data;
-using Genealogy.Infrastructure.Data.Migration;
 using Genealogy.Infrastructure.Data.Migration.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Genealogy.Infrastructure;
 
@@ -21,7 +19,7 @@ public static class InfrastructureExtensions
         }
         else
         {
-            services.AddDbContextFactory<GenealogyDbContext>(options => options.UseInMemoryDatabase("Genealogy"));
+            throw new InvalidOperationException("No connection string was configured");
         }
         services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
