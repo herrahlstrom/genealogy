@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\my-gen\src\MyGen.Data\MyGen.Data.csproj" />
     <ProjectReference Include="..\Genealogy.Domain\Genealogy.Domain.csproj" />
     <ProjectReference Include="..\Genealogy.Infrastructure\Genealogy.Infrastructure.csproj" />
     <ProjectReference Include="..\Genealogy.Shared\Genealogy.Shared.csproj" />

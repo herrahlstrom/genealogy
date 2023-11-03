@@ -13,9 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogy.Shared", "src\Gen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogy.PowerShell", "src\Genealogy.PowerShell\Genealogy.PowerShell.csproj", "{4DC39C45-B854-4891-8C7E-C2D94E264A03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyGen.Data", "..\my-gen\src\MyGen.Data\MyGen.Data.csproj", "{DBBC2E12-2760-4DCA-8900-D2ABDD9B4D2F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Genealogy.Test", "tests\Genealogy.Test\Genealogy.Test.csproj", "{478A0EA7-EFFB-4E78-8599-7363AFE32F47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogy.Test", "tests\Genealogy.Test\Genealogy.Test.csproj", "{478A0EA7-EFFB-4E78-8599-7363AFE32F47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +41,6 @@ Global
 		{4DC39C45-B854-4891-8C7E-C2D94E264A03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DC39C45-B854-4891-8C7E-C2D94E264A03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DC39C45-B854-4891-8C7E-C2D94E264A03}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DBBC2E12-2760-4DCA-8900-D2ABDD9B4D2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DBBC2E12-2760-4DCA-8900-D2ABDD9B4D2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DBBC2E12-2760-4DCA-8900-D2ABDD9B4D2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DBBC2E12-2760-4DCA-8900-D2ABDD9B4D2F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{478A0EA7-EFFB-4E78-8599-7363AFE32F47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{478A0EA7-EFFB-4E78-8599-7363AFE32F47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{478A0EA7-EFFB-4E78-8599-7363AFE32F47}.Release|Any CPU.ActiveCfg = Release|Any CPU
