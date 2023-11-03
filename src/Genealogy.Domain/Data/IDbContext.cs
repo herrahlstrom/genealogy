@@ -18,7 +18,6 @@ public interface IUnitOfWork : IDisposable
     
     IEntityRepository<FamilyMember> FamilyMemberRepository { get; }
     IEntityRepository<EventMember> EventMemberRepository { get; }
-    IEntityRepository<EventSources> EventSourcesRepository { get; }
     IEntityRepository<MediaReference> MediaReferencesRepository { get; }
     
     Task<int> CommitAsync(CancellationToken cancellationToken = default);

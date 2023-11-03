@@ -17,9 +17,3 @@ public interface IEntityRepository<TEntity> where TEntity : class
 
     Task<IReadOnlyCollection<TEntity>> GetAllAsync();
 }
-
-public interface IPersonRepository
-{
-    PersonEntity Add();
-    Task<PersonEntity> GetAsync(Guid id);
-}

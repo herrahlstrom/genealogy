@@ -13,4 +13,5 @@ public class EventEntity
     public string? Name { get; set; }
     public string Notes { get; set; } = "";
     public required EventType Type { get; set; }
+    public ICollection<SourceEntity> Sources { get; set; } = new List<SourceEntity>();
 }

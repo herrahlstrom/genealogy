@@ -13,12 +13,6 @@ public class EventMember
     public required EventType Type { get; set; }
 }
 
-public class EventSources
-{
-    public required Guid EventId { get; init; }
-    public required Guid SourceId { get; init; }
-}
-
 public class FamilyMember
 {
     public required Guid FamilyId { get; init; }

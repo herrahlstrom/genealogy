@@ -11,7 +11,6 @@ internal class UnitOfWork : IUnitOfWork
     private readonly GenealogyDbContext _dbContext;
     private IEntityRepository<EventMember>? _eventMemberRepository = null;
     private IEntityRepository<EventEntity>? _eventRepository = null;
-    private IEntityRepository<EventSources>? _eventSourcesRepository = null;
     private IEntityRepository<FamilyMember>? _familyMemberRepository = null;
     private IEntityRepository<FamilyEntity>? _familyRepository = null;
     private IEntityRepository<MediaReference>? _mediaReferencesRepository = null;
@@ -26,7 +25,6 @@ internal class UnitOfWork : IUnitOfWork
 
     public IEntityRepository<EventMember> EventMemberRepository => _eventMemberRepository ??= new EntityRepository<EventMember>(_dbContext.Set<EventMember>());
     public IEntityRepository<EventEntity> EventRepository => _eventRepository ??= new EntityRepository<EventEntity>(_dbContext.Set<EventEntity>());
-    public IEntityRepository<EventSources> EventSourcesRepository => _eventSourcesRepository ??= new EntityRepository<EventSources>(_dbContext.Set<EventSources>());
     public IEntityRepository<FamilyMember> FamilyMemberRepository => _familyMemberRepository ??= new EntityRepository<FamilyMember>(_dbContext.Set<FamilyMember>());
     public IEntityRepository<FamilyEntity> FamilyRepository => _familyRepository ??= new EntityRepository<FamilyEntity>(_dbContext.Set<FamilyEntity>());
     public IEntityRepository<MediaReference> MediaReferencesRepository => _mediaReferencesRepository ??= new EntityRepository<MediaReference>(_dbContext.Set<MediaReference>());
@@ -36,7 +34,7 @@ internal class UnitOfWork : IUnitOfWork
 
     public Task<int> CommitAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public void Dispose()
