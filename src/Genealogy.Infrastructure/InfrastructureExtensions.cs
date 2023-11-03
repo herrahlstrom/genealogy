@@ -1,7 +1,6 @@
 ﻿using DbUp.Engine;
 using Genealogy.Domain.Data;
 using Genealogy.Infrastructure.Data;
-using Genealogy.Infrastructure.Data.Migration.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +13,6 @@ public static class InfrastructureExtensions
     {
         if (configuration.GetConnectionString("Sqlite") is { } sqlite)
         {
-            services.AddSingleton<IScriptProvider, SqliteScriptProvider>();
             services.AddDbContextFactory<GenealogyDbContext>(options => options.UseSqlite(sqlite));
         }
         else
