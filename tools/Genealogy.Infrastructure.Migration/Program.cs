@@ -4,25 +4,31 @@ using Genealogy.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Genealogy.Infrastructure.Migration;
 
-public class BloggingContextFactory : IDesignTimeDbContextFactory<GenealogyDbContext>
+public class BloggingContextFactory : IDesignTimeDbContextFactory<GenealogyDbContext>, IDisposable
 {
-    IConfigurationRoot _configuration;
+    private readonly ServiceProvider _services;
 
     public BloggingContextFactory()
     {
-        _configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                                                   .AddJsonFile("appsettings.json")
-                                                   .Build();
+        var configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                                                      .AddJsonFile("appsettings.json")
+                                                      .Build();
+
+        _services = new ServiceCollection().AddDbContext<GenealogyDbContext>(builder => builder.UseSqlite(configuration.GetConnectionString("Sqlite")))
+                                           .BuildServiceProvider();
     }
 
     GenealogyDbContext IDesignTimeDbContextFactory<GenealogyDbContext>.CreateDbContext(string[] args)
     {
-        var optionsBuilder = new DbContextOptionsBuilder<GenealogyDbContext>();
-        optionsBuilder.UseSqlite(_configuration.GetConnectionString("Sqlite"));
+        return _services.GetRequiredService<GenealogyDbContext>();
+    }
 
-        return new GenealogyDbContext(optionsBuilder.Options);
+    public void Dispose()
+    {
+        _services.Dispose();
     }
 }
