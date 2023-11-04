@@ -39,5 +39,17 @@ internal class SourceConfiguration : IEntityTypeConfiguration<SourceEntity>
 
         builder.Property(x => x.Volume)
                .HasColumnName("volume");
+
+        builder.HasMany(x => x.Media)
+               .WithMany()
+               .UsingEntity("SourceMedia",
+               b => b.HasOne(typeof(MediaEntity), "Media").WithMany().HasForeignKey("MediaId"),
+               b => b.HasOne(typeof(SourceEntity), "Source").WithMany().HasForeignKey("SourceId"),
+               b =>
+               {
+                   b.ToTable("source_media").HasKey("SourceId", "MediaId");
+                   b.Property(typeof(Guid), "SourceId").HasColumnName("sourceId");
+                   b.Property(typeof(Guid), "MediaId").HasColumnName("mediaId");
+               });
     }
 }

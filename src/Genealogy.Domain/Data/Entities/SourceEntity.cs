@@ -12,4 +12,6 @@ public class SourceEntity
     public string? Url { get; set; }
     public string? Volume { get; set; }
     public ICollection<EventEntity> Events { get; set; } = new List<EventEntity>();
+
+    public ICollection<MediaEntity> Media { get; } = new List<MediaEntity>();
 }
