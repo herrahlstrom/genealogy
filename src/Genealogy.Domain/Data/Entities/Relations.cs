@@ -19,9 +19,3 @@ public class FamilyMember
     public required FamilyMemberType MemberType { get; set; }
     public required Guid PersonId { get; init; }
 }
-
-public class MediaReference
-{
-    public required Guid MediaId { get; init; }
-    public required Guid EntityId { get; init; }
-}
