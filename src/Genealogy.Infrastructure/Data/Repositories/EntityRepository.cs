@@ -1,9 +1,10 @@
-﻿using Genealogy.Domain.Data.Repositories;
+﻿using Genealogy.Domain.Data.Entities;
+using Genealogy.Domain.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Genealogy.Infrastructure.Data.Repositories;
 
-internal class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntity : class
+internal abstract class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntity : class
 {
     protected readonly DbSet<TEntity> _dbSet;
     public EntityRepository(DbSet<TEntity> dbSet)
@@ -16,13 +17,8 @@ internal class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEnt
         _dbSet.Add(entity);
     }
 
-    public ValueTask<TEntity?> FindAsync(params object?[]? keyValues)
+    public async Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellation)
     {
-        return _dbSet.FindAsync(keyValues);
-    }
-
-    public async Task<IReadOnlyCollection<TEntity>> GetAllAsync()
-    {
-        return await _dbSet.ToListAsync();
+        return await _dbSet.ToListAsync(cancellation);
     }
 }

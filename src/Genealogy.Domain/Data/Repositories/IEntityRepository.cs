@@ -1,6 +1,4 @@
-﻿using Genealogy.Domain.Data.Entities;
-
-namespace Genealogy.Domain.Data.Repositories;
+﻿namespace Genealogy.Domain.Data.Repositories;
 
 public interface IEntityRepository<TEntity> where TEntity : class
 {
@@ -13,7 +11,6 @@ public interface IEntityRepository<TEntity> where TEntity : class
             Add(entity);
         }
     }
-    ValueTask<TEntity?> FindAsync(params object?[]? keyValues);
 
-    Task<IReadOnlyCollection<TEntity>> GetAllAsync();
+    Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellation);
 }
