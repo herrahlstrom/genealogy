@@ -1,4 +1,5 @@
 ﻿using Genealogy.Domain.Data;
+using Genealogy.Domain.Data.Entities;
 using Genealogy.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,9 +15,13 @@ using var services = new ServiceCollection().AddLogging(x => x.AddConfiguration(
                                             .AddInfrastructure(configuration)
                                             .BuildServiceProvider();
 
-var dbContextFactory = services.GetRequiredService<IUnitOfWorkFactory>();
+var uofFactory = services.GetRequiredService<IUnitOfWorkFactory>();
 
-using (var dbContext = dbContextFactory.CreateDbContext())
+using (var uof = uofFactory.CreateDbContext())
 {
-    var items = await dbContext.EventRepository.GetAllAsync();
+
+
+
+    //var changes = await uof.CommitAsync();
 }
+
