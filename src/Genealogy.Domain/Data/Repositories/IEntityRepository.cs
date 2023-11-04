@@ -3,6 +3,7 @@
 public interface IEntityRepository<TEntity> where TEntity : class
 {
     void Add(TEntity entity);
+    void Remove(TEntity entity);
 
     void AddRange(IEnumerable<TEntity> entities)
     {
@@ -12,5 +13,5 @@ public interface IEntityRepository<TEntity> where TEntity : class
         }
     }
 
-    Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellation);
+    Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellation = default);
 }

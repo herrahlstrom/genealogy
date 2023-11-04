@@ -3,6 +3,7 @@ using System;
 using Genealogy.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Genealogy.Infrastructure.Migrations
 {
     [DbContext(typeof(GenealogyDbContext))]
-    partial class GenealogyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231104213123_PersonMedia")]
+    partial class PersonMedia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.13");

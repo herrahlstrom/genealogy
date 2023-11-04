@@ -10,4 +10,9 @@ internal class EventRepository : EntityRepository<EventEntity>, IEventRepository
     {
 
     }
+
+    public async Task<EventEntity> GetById(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.Where(x => x.Id == id).FirstAsync(cancellationToken);
+    }
 }

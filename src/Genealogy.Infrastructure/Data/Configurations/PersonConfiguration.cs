@@ -27,5 +27,18 @@ internal class PersonConfiguration : IEntityTypeConfiguration<PersonEntity>
 
         builder.Property(x => x.Sex)
                .HasColumnName("sex");
+
+        builder.HasMany(x => x.Media)
+               .WithMany()
+               .UsingEntity("PersonMedia",
+               b => b.HasOne(typeof(MediaEntity), "Media").WithMany().HasForeignKey("MediaId"),
+               b => b.HasOne(typeof(PersonEntity), "Person").WithMany().HasForeignKey("PersonId"),
+               b =>
+               {
+                   b.ToTable("person_media").HasKey("PersonId", "MediaId");
+                   b.Property(typeof(Guid), "PersonId").HasColumnName("personId");
+                   b.Property(typeof(Guid), "MediaId").HasColumnName("mediaId");
+               });
     }
+
 }

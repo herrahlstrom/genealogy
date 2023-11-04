@@ -7,6 +7,7 @@ namespace Genealogy.Infrastructure.Data.Repositories;
 internal abstract class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntity : class
 {
     protected readonly DbSet<TEntity> _dbSet;
+
     public EntityRepository(DbSet<TEntity> dbSet)
     {
         _dbSet = dbSet;
@@ -20,5 +21,10 @@ internal abstract class EntityRepository<TEntity> : IEntityRepository<TEntity> w
     public async Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellation)
     {
         return await _dbSet.ToListAsync(cancellation);
+    }
+
+    public void Remove(TEntity entity)
+    {
+        _dbSet.Remove(entity);
     }
 }

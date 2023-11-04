@@ -2,4 +2,7 @@
 
 namespace Genealogy.Domain.Data.Repositories;
 
-public interface IEventRepository : IEntityRepository<EventEntity> { }
+public interface IEventRepository : IEntityRepository<EventEntity>
+{
+    Task<EventEntity> GetById(Guid id, CancellationToken cancellationToken = default);
+}
