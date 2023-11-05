@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Genealogy.Domain.Data.Entities;
 
-public class EventEntity
+public class EventEntity : IEntity<Guid>
 {
     public string? Date { get; set; }
     public string? EndDate { get; set; }
@@ -12,6 +12,6 @@ public class EventEntity
     public string? Location { get; set; }
     public string? Name { get; set; }
     public string Notes { get; set; } = "";
-    public required EventType Type { get; set; }
     public ICollection<SourceEntity> Sources { get; set; } = new List<SourceEntity>();
+    public required EventType Type { get; set; }
 }

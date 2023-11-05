@@ -2,7 +2,6 @@
 
 namespace Genealogy.Domain.Data.Repositories;
 
-public interface ISourceRepository : IEntityRepository<SourceEntity>
+public interface ISourceRepository : IEntityRepository<Guid, SourceEntity>
 {
-    Task<SourceEntity> GetById(Guid id, CancellationToken cancellationToken = default);
 }

@@ -1,6 +1,6 @@
 ﻿namespace Genealogy.Domain.Data.Entities;
 
-public class MediaEntity
+public class MediaEntity : IEntity<Guid>
 {
     public required Guid Id { get; init; }
     public required MediaType Type { get; set; }

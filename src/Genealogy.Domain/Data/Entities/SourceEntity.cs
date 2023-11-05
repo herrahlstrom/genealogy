@@ -1,6 +1,6 @@
 ﻿namespace Genealogy.Domain.Data.Entities;
 
-public class SourceEntity
+public class SourceEntity : IEntity<Guid>
 {
     public required Guid Id { get; init; }
     public required string Name { get; set; }
