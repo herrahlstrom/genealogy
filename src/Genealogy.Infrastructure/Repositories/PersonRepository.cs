@@ -1,13 +1,15 @@
 ﻿using Genealogy.Domain.Data.Entities;
 using Genealogy.Domain.Data.Repositories;
-using Microsoft.EntityFrameworkCore;
+using Genealogy.Infrastructure.Data;
 
 namespace Genealogy.Infrastructure.Repositories;
 
 internal class PersonRepository : EntityRepository<Guid, PersonEntity>, IPersonRepository
 {
-    public PersonRepository(DbSet<PersonEntity> dbSet) : base(dbSet)
-    {
+    private readonly GenealogyDbContext m_dbContext;
 
+    public PersonRepository(GenealogyDbContext dbContext) : base(dbContext.Set<PersonEntity>())
+    {
+        m_dbContext = dbContext;
     }
 }

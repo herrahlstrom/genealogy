@@ -1,13 +1,15 @@
 ﻿using Genealogy.Domain.Data.Entities;
 using Genealogy.Domain.Data.Repositories;
-using Microsoft.EntityFrameworkCore;
+using Genealogy.Infrastructure.Data;
 
 namespace Genealogy.Infrastructure.Repositories;
 
 internal class SourceRepository : EntityRepository<Guid, SourceEntity>, ISourceRepository
 {
-    public SourceRepository(DbSet<SourceEntity> dbSet) : base(dbSet)
-    {
+    private readonly GenealogyDbContext m_dbContext;
 
+    public SourceRepository(GenealogyDbContext dbContext) : base(dbContext.Set<SourceEntity>())
+    {
+        m_dbContext = dbContext;
     }
 }

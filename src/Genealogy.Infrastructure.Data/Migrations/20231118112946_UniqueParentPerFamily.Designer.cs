@@ -3,6 +3,7 @@ using System;
 using Genealogy.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Genealogy.Infrastructure.Migrations
 {
     [DbContext(typeof(GenealogyDbContext))]
-    partial class GenealogyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231118112946_UniqueParentPerFamily")]
+    partial class UniqueParentPerFamily
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.13");
@@ -130,8 +133,6 @@ namespace Genealogy.Infrastructure.Migrations
                         .HasColumnName("memberType");
 
                     b.HasKey("FamilyId", "PersonId");
-
-                    b.HasIndex("PersonId");
 
                     b.HasIndex("FamilyId", "MemberType")
                         .IsUnique()
@@ -337,25 +338,6 @@ namespace Genealogy.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyMember", b =>
-                {
-                    b.HasOne("Genealogy.Domain.Data.Entities.FamilyEntity", "Family")
-                        .WithMany("FamilyMembers")
-                        .HasForeignKey("FamilyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Genealogy.Domain.Data.Entities.PersonEntity", "Person")
-                        .WithMany("Families")
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Family");
-
-                    b.Navigation("Person");
-                });
-
             modelBuilder.Entity("Genealogy.Domain.Data.Entities.MediaEntity", b =>
                 {
                     b.OwnsMany("Genealogy.Domain.Data.Entities.MediaMeta", "Meta", b1 =>
@@ -416,16 +398,6 @@ namespace Genealogy.Infrastructure.Migrations
                         .HasForeignKey("SourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyEntity", b =>
-                {
-                    b.Navigation("FamilyMembers");
-                });
-
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.PersonEntity", b =>
-                {
-                    b.Navigation("Families");
                 });
 #pragma warning restore 612, 618
         }

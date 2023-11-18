@@ -1,7 +1,6 @@
 ﻿using Genealogy.Domain.Data.Entities;
 using Genealogy.Domain.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
 
 namespace Genealogy.Infrastructure.Repositories;
 

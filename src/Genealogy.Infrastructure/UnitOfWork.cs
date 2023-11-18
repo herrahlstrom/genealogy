@@ -21,10 +21,10 @@ internal class UnitOfWork : IUnitOfWork
     }
 
     public IEventRepository EventRepository => _eventRepository ??= new EventRepository(_dbContext);
-    public IFamilyRepository FamilyRepository => _familyRepository ??= new FamilyRepository(_dbContext.Set<FamilyEntity>());
-    public IMediaRepository MediaRepository => _mediaRepository ??= new MediaRepository(_dbContext.Set<MediaEntity>());
-    public IPersonRepository PersonRepository => _personRepository ??= new PersonRepository(_dbContext.Set<PersonEntity>());
-    public ISourceRepository SourceRepository => _sourceRepository ??= new SourceRepository(_dbContext.Set<SourceEntity>());
+    public IFamilyRepository FamilyRepository => _familyRepository ??= new FamilyRepository(_dbContext);
+    public IMediaRepository MediaRepository => _mediaRepository ??= new MediaRepository(_dbContext);
+    public IPersonRepository PersonRepository => _personRepository ??= new PersonRepository(_dbContext);
+    public ISourceRepository SourceRepository => _sourceRepository ??= new SourceRepository(_dbContext);
 
     public Task<int> CommitAsync(CancellationToken cancellationToken = default)
     {

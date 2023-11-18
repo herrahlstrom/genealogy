@@ -29,8 +29,8 @@ public enum FamilyMemberType
 
     [Display(Name = "Far")] Husband = 1,
     [Display(Name = "Mor")] Wife = 2,
-    [Display(Name = "Barn")] Children = 3,
-    [Display(Name = "Fosterbarn")] FosterChildren = 4
+    [Display(Name = "Barn")] Child = 3,
+    [Display(Name = "Fosterbarn")] FosterChild = 4
 }
 
 public enum SourceType
