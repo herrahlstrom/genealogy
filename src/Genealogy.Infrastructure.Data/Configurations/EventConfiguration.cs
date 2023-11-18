@@ -3,6 +3,7 @@ using System.Linq;
 using Genealogy.Domain.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Logging;
 
 namespace Genealogy.Infrastructure.Data.Configurations;
 
@@ -36,32 +37,15 @@ internal class EventConfiguration : IEntityTypeConfiguration<EventEntity>
 
         builder.HasMany(x => x.Sources)
                .WithMany(x => x.Events)
-               .UsingEntity<EventSources>(
-            builder => builder.HasOne(x => x.Sources).WithMany().HasForeignKey(x => x.SourceId),
-            builder => builder.HasOne(x => x.Events).WithMany().HasForeignKey(x => x.EventId),
-            ConfigureEntity);
-    }
-
-    private void ConfigureEntity(EntityTypeBuilder<EventSources> builder)
-    {
-        builder.ToTable("event_sources")
-               .HasKey(x => new { x.EventId, x.SourceId });
-
-        builder.Property(x => x.EventId)
-               .HasColumnName("eventId");
-
-        builder.Property(x => x.SourceId)
-               .HasColumnName("sourceId");
-    }
-
-    private class EventSources
-    {
-        public required Guid EventId { get; init; }
-
-        public required EventEntity Events { get; init; }
-
-        public required Guid SourceId { get; init; }
-
-        public required SourceEntity Sources { get; init; }
+               .UsingEntity("EventSources",
+               l => l.HasOne(typeof(SourceEntity)).WithMany().HasForeignKey("SourceId"),
+               r => r.HasOne(typeof(EventEntity)).WithMany().HasForeignKey("EventId"),
+               j =>
+               {
+                   j.ToTable("event_sources");
+                   j.Property<Guid>("EventId").HasColumnName("eventId");
+                   j.Property<Guid>("SourceId").HasColumnName("sourceId");
+                   j.HasKey("EventId", "SourceId");
+               });
     }
 }

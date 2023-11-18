@@ -3,7 +3,7 @@ using Genealogy.Domain.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
 
-namespace Genealogy.Infrastructure.Data.Repositories;
+namespace Genealogy.Infrastructure.Repositories;
 
 internal abstract class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntity : class
 {
@@ -42,6 +42,6 @@ internal abstract class EntityRepository<TKey, TEntity> : EntityRepository<TEnti
 
     public async Task<TEntity> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
     {
-        return await DbSet.Where(x => x.Id.Equals(id)).FirstAsync(cancellationToken);        
+        return await DbSet.Where(x => x.Id.Equals(id)).FirstAsync(cancellationToken);
     }
 }

@@ -1,9 +1,10 @@
 ﻿using Genealogy.Domain.Data;
 using Genealogy.Domain.Data.Entities;
 using Genealogy.Domain.Data.Repositories;
-using Genealogy.Infrastructure.Data.Repositories;
+using Genealogy.Infrastructure.Data;
+using Genealogy.Infrastructure.Repositories;
 
-namespace Genealogy.Infrastructure.Data;
+namespace Genealogy.Infrastructure;
 
 internal class UnitOfWork : IUnitOfWork
 {
@@ -19,7 +20,7 @@ internal class UnitOfWork : IUnitOfWork
         _dbContext = dbContext;
     }
 
-    public IEventRepository EventRepository => _eventRepository ??= new EventRepository(_dbContext.Set<EventEntity>());
+    public IEventRepository EventRepository => _eventRepository ??= new EventRepository(_dbContext);
     public IFamilyRepository FamilyRepository => _familyRepository ??= new FamilyRepository(_dbContext.Set<FamilyEntity>());
     public IMediaRepository MediaRepository => _mediaRepository ??= new MediaRepository(_dbContext.Set<MediaEntity>());
     public IPersonRepository PersonRepository => _personRepository ??= new PersonRepository(_dbContext.Set<PersonEntity>());

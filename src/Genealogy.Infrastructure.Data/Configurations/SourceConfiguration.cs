@@ -43,13 +43,14 @@ internal class SourceConfiguration : IEntityTypeConfiguration<SourceEntity>
         builder.HasMany(x => x.Media)
                .WithMany()
                .UsingEntity("SourceMedia",
-               b => b.HasOne(typeof(MediaEntity), "Media").WithMany().HasForeignKey("MediaId"),
-               b => b.HasOne(typeof(SourceEntity), "Source").WithMany().HasForeignKey("SourceId"),
-               b =>
+               l => l.HasOne(typeof(MediaEntity)).WithMany().HasForeignKey("MediaId"),
+               r => r.HasOne(typeof(SourceEntity)).WithMany().HasForeignKey("SourceId"),
+               j =>
                {
-                   b.ToTable("source_media").HasKey("SourceId", "MediaId");
-                   b.Property(typeof(Guid), "SourceId").HasColumnName("sourceId");
-                   b.Property(typeof(Guid), "MediaId").HasColumnName("mediaId");
+                   j.ToTable("source_media");
+                   j.Property<Guid>("SourceId").HasColumnName("sourceId");
+                   j.Property<Guid>("MediaId").HasColumnName("mediaId");
+                   j.HasKey("SourceId", "MediaId");
                });
     }
 }

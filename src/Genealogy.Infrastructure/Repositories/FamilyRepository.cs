@@ -2,7 +2,7 @@
 using Genealogy.Domain.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Genealogy.Infrastructure.Data.Repositories;
+namespace Genealogy.Infrastructure.Repositories;
 
 internal class FamilyRepository : EntityRepository<Guid, FamilyEntity>, IFamilyRepository
 {

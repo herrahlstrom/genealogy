@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -11,17 +11,11 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.13" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Genealogy.Infrastructure\Genealogy.Infrastructure.csproj" />
+      <ProjectReference Include="..\Genealogy.Domain\Genealogy.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Update="appsettings.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-    
 </Project>

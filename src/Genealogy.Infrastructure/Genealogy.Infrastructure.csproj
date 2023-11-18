@@ -5,13 +5,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="dbup-sqlite" Version="5.0.37" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.13" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Genealogy.Domain\Genealogy.Domain.csproj" />
+        <ProjectReference Include="..\Genealogy.Infrastructure.Data\Genealogy.Infrastructure.Data.csproj" />
         <ProjectReference Include="..\Genealogy.Shared\Genealogy.Shared.csproj" />
     </ItemGroup>
 

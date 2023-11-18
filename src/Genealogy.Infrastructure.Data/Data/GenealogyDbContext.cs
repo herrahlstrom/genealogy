@@ -2,7 +2,7 @@
 
 namespace Genealogy.Infrastructure.Data;
 
-internal class GenealogyDbContext : DbContext
+public class GenealogyDbContext : DbContext
 {
 
     public GenealogyDbContext(DbContextOptions<GenealogyDbContext> options) : base(options)

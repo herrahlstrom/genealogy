@@ -1,7 +1,8 @@
 ﻿using Genealogy.Domain.Data;
+using Genealogy.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace Genealogy.Infrastructure.Data;
+namespace Genealogy.Infrastructure;
 
 internal class UnitOfWorkFactory : IUnitOfWorkFactory
 {

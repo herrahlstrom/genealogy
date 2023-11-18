@@ -14,7 +14,6 @@ public class MediaEntity : IEntity<Guid>
 
 public class MediaMeta
 {
-    public required Guid MediaId { get; init; }
     public required string Key { get; init; }
     public required string Value { get; set; }
 }

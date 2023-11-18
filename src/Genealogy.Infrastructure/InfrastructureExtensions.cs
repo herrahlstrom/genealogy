@@ -1,5 +1,4 @@
-﻿using DbUp.Engine;
-using Genealogy.Domain.Data;
+﻿using Genealogy.Domain.Data;
 using Genealogy.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
