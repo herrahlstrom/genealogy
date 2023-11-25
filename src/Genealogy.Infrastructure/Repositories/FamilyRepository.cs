@@ -12,4 +12,9 @@ internal class FamilyRepository : EntityRepository<Guid, FamilyEntity>, IFamilyR
     {
         m_dbContext = dbContext;
     }
+
+    public Task LoadEvents(FamilyEntity entity)
+    {
+        return m_dbContext.Entry(entity).Collection(x=> x.Events).LoadAsync();
+    }
 }

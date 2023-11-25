@@ -18,5 +18,7 @@ internal class FamilyConfiguration : IEntityTypeConfiguration<FamilyEntity>
 
         builder.Property(x => x.Notes)
                .HasColumnName("notes");
+
+        builder.HasMany(x => x.Events).WithOne().HasForeignKey(x => x.EntityId);
     }
 }

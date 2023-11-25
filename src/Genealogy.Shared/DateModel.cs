@@ -18,8 +18,6 @@ public partial class DateModel : IEquatable<DateModel>
         _lazyDate = new Lazy<DateOnly?>(GetDate);
     }
 
-    public static DateModel Empty { get; } = new DateModel("");
-
     public DateOnly? Date => _lazyDate.Value;
 
     public string DisplayDate
@@ -72,5 +70,14 @@ public partial class DateModel : IEquatable<DateModel>
             return int.Parse(m.Groups["year"].Value);
         }
         return null;
+    }
+
+    public static implicit operator DateModel(string? str)
+    {
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            return new DateModel("");
+        }
+        return new DateModel(str);
     }
 }

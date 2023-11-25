@@ -8,9 +8,13 @@ namespace Genealogy.PowerShell.Cmdlets;
 
 public abstract class CmdletBase : PSCmdlet
 {
+    private IServiceProvider? m_services = null;
+
     public CmdletBase()
     {
     }
+
+    protected IServiceProvider Services { get => m_services ??= ServiceLocator.Instance; }
 
     protected override sealed void EndProcessing()
     {
@@ -23,7 +27,6 @@ public abstract class CmdletBase : PSCmdlet
     {
         return MyInvocation?.BoundParameters.ContainsKey(parameterName) == true;
     }
-
     protected override sealed void ProcessRecord()
     {
         AsyncContext.Run(ProcessRecordAsync);

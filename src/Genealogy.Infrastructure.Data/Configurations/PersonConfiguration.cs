@@ -17,7 +17,8 @@ internal class PersonConfiguration : IEntityTypeConfiguration<PersonEntity>
                .HasColumnName("id");
 
         builder.Property(x => x.Name)
-               .HasColumnName("name");
+               .HasColumnName("name")
+               .UseCollation("NOCASE");
 
         builder.Property(x => x.Notes)
                .HasColumnName("notes");
@@ -39,6 +40,8 @@ internal class PersonConfiguration : IEntityTypeConfiguration<PersonEntity>
                    b.Property(typeof(Guid), "PersonId").HasColumnName("personId");
                    b.Property(typeof(Guid), "MediaId").HasColumnName("mediaId");
                });
+
+        builder.HasMany(x => x.Events).WithOne().HasForeignKey(x => x.EntityId);
     }
 
 }

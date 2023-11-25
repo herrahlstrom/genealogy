@@ -1,5 +1,4 @@
 ﻿using Genealogy.Domain.Data;
-using Genealogy.Domain.Data.Entities;
 using Genealogy.Domain.Data.Repositories;
 using Genealogy.Infrastructure.Data;
 using Genealogy.Infrastructure.Repositories;

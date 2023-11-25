@@ -16,7 +16,13 @@ internal class ServiceLocator : IServiceProvider
     public ServiceLocator()
     {
         var configuration = BuildConfiguration();
-        _services = CreateServices(configuration).BuildServiceProvider();
+
+        _services = new ServiceCollection()
+            .AddLogging(builder => builder.AddConfiguration(configuration.GetSection("Logging"))
+                                          .AddConsole()
+                                          .AddDebug())
+            .AddInfrastructure(configuration)
+            .BuildServiceProvider();
     }
 
     public static ServiceLocator Instance => _instance ??= new ServiceLocator();
@@ -29,25 +35,11 @@ internal class ServiceLocator : IServiceProvider
     private static IConfiguration BuildConfiguration()
     {
         var appsettignsResourceName = "Genealogy.PowerShell.appsettings.json";
-        using var resourceStream = Assembly.GetExecutingAssembly()
-                                           .GetManifestResourceStream(appsettignsResourceName)
-            ?? throw new Exception($"Embedded resource not found: {appsettignsResourceName}");
+        using var stream = Assembly.GetExecutingAssembly()
+                                   .GetManifestResourceStream(appsettignsResourceName) ?? throw new Exception($"Embedded resource not found: {appsettignsResourceName}");
 
         return new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
-                                         .AddJsonStream(resourceStream)
+                                         .AddJsonStream(stream)
                                          .Build();
-    }
-
-    private static ServiceCollection CreateServices(IConfiguration configuration)
-    {
-        ServiceCollection services = new();
-
-        services.AddLogging(builder => builder.AddConfiguration(configuration.GetSection("Logging"))
-                                              .AddConsole()
-                                              .AddDebug());
-
-        services.AddInfrastructure(configuration);
-
-        return services;
     }
 }

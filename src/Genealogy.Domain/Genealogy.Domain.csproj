@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <PackageReference Include="MediatR" Version="12.1.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="7.0.13" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.0" />
     </ItemGroup>
 
 </Project>

@@ -7,24 +7,15 @@ namespace Genealogy.Infrastructure;
 internal class UnitOfWorkFactory : IUnitOfWorkFactory
 {
     private readonly IDbContextFactory<GenealogyDbContext> _factory;
-    private bool migrated = false;
 
     public UnitOfWorkFactory(IDbContextFactory<GenealogyDbContext> dbContextFactory)
     {
         _factory = dbContextFactory;
     }
 
-    IUnitOfWork IUnitOfWorkFactory.CreateDbContext()
+    IUnitOfWork IUnitOfWorkFactory.CreateUnitOfWork()
     {
-        lock(_factory)
-        {
-            var dbContext = _factory.CreateDbContext();
-            if (!migrated)
-            {
-                dbContext.Database.Migrate();
-                migrated = true;
-            }
-            return new UnitOfWork(dbContext);
-        }
+        var dbContext = _factory.CreateDbContext();
+        return new UnitOfWork(dbContext);
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Genealogy.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,12 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Genealogy.Infrastructure.Migrations
 {
     [DbContext(typeof(GenealogyDbContext))]
-    partial class GenealogyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231122170407_EventMemberTypes")]
+    partial class EventMemberTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.13");
 
             modelBuilder.Entity("EventSources", b =>
                 {
@@ -89,6 +92,12 @@ namespace Genealogy.Infrastructure.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("endDate");
 
+                    b.Property<int>("EntityType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0)
+                        .HasColumnName("discriminator");
+
                     b.Property<int>("EventType")
                         .HasColumnType("INTEGER")
                         .HasColumnName("type");
@@ -97,7 +106,9 @@ namespace Genealogy.Infrastructure.Migrations
 
                     b.ToTable("event_members", (string)null);
 
-                    b.UseTptMappingStrategy();
+                    b.HasDiscriminator<int>("EntityType");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyEntity", b =>
@@ -194,8 +205,7 @@ namespace Genealogy.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("name")
-                        .UseCollation("NOCASE");
+                        .HasColumnName("name");
 
                     b.Property<string>("Notes")
                         .IsRequired()
@@ -301,18 +311,21 @@ namespace Genealogy.Infrastructure.Migrations
                 {
                     b.HasBaseType("Genealogy.Domain.Data.Entities.EventMember");
 
-                    b.HasIndex("EntityId");
-
-                    b.ToTable("event_members_family", (string)null);
+                    b.HasDiscriminator().HasValue(2);
                 });
 
             modelBuilder.Entity("Genealogy.Domain.Data.Entities.PersonEventMember", b =>
                 {
                     b.HasBaseType("Genealogy.Domain.Data.Entities.EventMember");
 
-                    b.HasIndex("EntityId");
+                    b.HasDiscriminator().HasValue(1);
+                });
 
-                    b.ToTable("event_members_person", (string)null);
+            modelBuilder.Entity("Genealogy.Domain.Data.Entities.UnknownEventMember", b =>
+                {
+                    b.HasBaseType("Genealogy.Domain.Data.Entities.EventMember");
+
+                    b.HasDiscriminator().HasValue(0);
                 });
 
             modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyChildMember", b =>
@@ -356,17 +369,6 @@ namespace Genealogy.Infrastructure.Migrations
                         .HasForeignKey("SourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.EventMember", b =>
-                {
-                    b.HasOne("Genealogy.Domain.Data.Entities.EventEntity", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyMember", b =>
@@ -450,47 +452,13 @@ namespace Genealogy.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyEventMember", b =>
-                {
-                    b.HasOne("Genealogy.Domain.Data.Entities.FamilyEntity", null)
-                        .WithMany("Events")
-                        .HasForeignKey("EntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Genealogy.Domain.Data.Entities.EventMember", null)
-                        .WithOne()
-                        .HasForeignKey("Genealogy.Domain.Data.Entities.FamilyEventMember", "EventId", "EntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.PersonEventMember", b =>
-                {
-                    b.HasOne("Genealogy.Domain.Data.Entities.PersonEntity", null)
-                        .WithMany("Events")
-                        .HasForeignKey("EntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Genealogy.Domain.Data.Entities.EventMember", null)
-                        .WithOne()
-                        .HasForeignKey("Genealogy.Domain.Data.Entities.PersonEventMember", "EventId", "EntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyEntity", b =>
                 {
-                    b.Navigation("Events");
-
                     b.Navigation("FamilyMembers");
                 });
 
             modelBuilder.Entity("Genealogy.Domain.Data.Entities.PersonEntity", b =>
                 {
-                    b.Navigation("Events");
-
                     b.Navigation("Families");
                 });
 #pragma warning restore 612, 618

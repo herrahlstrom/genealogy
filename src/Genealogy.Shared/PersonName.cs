@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Genealogy.Shared;
@@ -14,11 +15,11 @@ public class PersonName
             NickName = "";
             LastName = "";
         }
-        else if (TryParseLastName(value, out string fn, out string ln))
+        else if (TryParseLastName(value, out string? fn, out string? ln))
         {
             FirstName = fn;
-            GivenName = TryParseGivenName(fn, out string gn) ? gn : "";
-            NickName = TryParseNickName(fn, out string nn) ? nn : "";
+            GivenName = TryParseGivenName(fn, out string? gn) ? gn : "";
+            NickName = TryParseNickName(fn, out string? nn) ? nn : "";
             LastName = ln;
         }
         else
@@ -38,8 +39,8 @@ public class PersonName
         }
         else
         {
-            GivenName = TryParseGivenName(firstName, out string gn) ? gn : "";
-            NickName = TryParseNickName(firstName, out string nn) ? nn : "";
+            GivenName = TryParseGivenName(firstName, out string? gn) ? gn : "";
+            NickName = TryParseNickName(firstName, out string? nn) ? nn : "";
         }
 
         LastName = lastName;
@@ -76,7 +77,7 @@ public class PersonName
     {
         return FullName;
     }
-    private bool TryParseGivenName(string firstName, out string givenName)
+    private bool TryParseGivenName(string firstName, [MaybeNullWhen(false)] out string givenName)
     {
         var arr = firstName.Split(' ');
 
@@ -95,11 +96,11 @@ public class PersonName
             return true;
         }
 
-        givenName = default!;
+        givenName = default;
         return false;
     }
 
-    private bool TryParseLastName(string input, out string firstName, out string lastName)
+    private bool TryParseLastName(string input, [MaybeNullWhen(false)] out string firstName, [MaybeNullWhen(false)] out string lastName)
     {
         int numberOfSlashes = input.Count(x => x.Equals('/'));
 
@@ -142,12 +143,12 @@ public class PersonName
             return true;
         }
 
-        firstName = default!;
-        lastName = default!;
+        firstName = default;
+        lastName = default;
         return false;
     }
 
-    private bool TryParseNickName(string firstName, out string nickName)
+    private bool TryParseNickName(string firstName, [MaybeNullWhen(false)] out string nickName)
     {
         char[] quotationSigns = new[] { '"', '\'' };
         int numberOfQuotes = firstName.Count(x => quotationSigns.Contains(x));

@@ -2,6 +2,6 @@
 
 public interface IUnitOfWorkFactory
 {
-    IUnitOfWork CreateDbContext();
+    IUnitOfWork CreateUnitOfWork();
 }
 
