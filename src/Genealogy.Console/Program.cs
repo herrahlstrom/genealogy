@@ -1,12 +1,8 @@
-﻿using Genealogy.Console;
-using Genealogy.Domain.Data;
-using Genealogy.Domain.Data.Entities;
+﻿using Genealogy.Domain.Data;
 using Genealogy.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using MyGen.Data;
 
 var configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                                               .AddJsonFile("appsettings.json")
