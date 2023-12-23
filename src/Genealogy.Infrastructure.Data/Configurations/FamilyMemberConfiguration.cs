@@ -44,8 +44,8 @@ internal class FamilyMemberConfiguration : IEntityTypeConfiguration<FamilyMember
                .HasValue<FamilyFosterChildMember>(FamilyMemberType.FosterChild);
 
         /* Navigations */
-        
-        builder.HasOne(x=> x.Family).WithMany(x=> x.FamilyMembers).HasForeignKey(FamilyIdProperty).OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne(x=> x.Person).WithMany(x=> x.Families).HasForeignKey(PersonIdProperty).OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.Family).WithMany(x => x.FamilyMembers).HasForeignKey(FamilyIdProperty).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.Person).WithMany(x => x.Families).HasForeignKey(PersonIdProperty).OnDelete(DeleteBehavior.Restrict);
     }
 }

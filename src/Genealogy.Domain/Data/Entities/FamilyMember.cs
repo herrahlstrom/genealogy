@@ -19,7 +19,7 @@ public abstract class FamilyMember
     {
         MemberType = memberType;
     }
-    
+
     public required FamilyEntity Family { get; init; }
     public required PersonEntity Person { get; init; }
     public FamilyMemberType MemberType { get; }

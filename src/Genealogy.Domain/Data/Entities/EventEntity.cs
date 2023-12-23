@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Text.Json.Serialization;
-
-namespace Genealogy.Domain.Data.Entities;
+﻿namespace Genealogy.Domain.Data.Entities;
 
 public class EventEntity : IEntity<Guid>
 {

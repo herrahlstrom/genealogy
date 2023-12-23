@@ -3,15 +3,19 @@ using System;
 using Genealogy.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace Genealogy.Infrastructure.Migrations
 {
     [DbContext(typeof(GenealogyDbContext))]
-    internal partial class GenealogyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231223094912_AddRsaKey")]
+    partial class AddRsaKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");

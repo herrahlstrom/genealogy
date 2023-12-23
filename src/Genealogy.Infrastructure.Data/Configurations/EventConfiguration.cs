@@ -3,7 +3,6 @@ using System.Linq;
 using Genealogy.Domain.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.Extensions.Logging;
 
 namespace Genealogy.Infrastructure.Data.Configurations;
 

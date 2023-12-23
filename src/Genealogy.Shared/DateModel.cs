@@ -40,9 +40,28 @@ public partial class DateModel : IEquatable<DateModel>
     public string Value { get; }
     public int? Year => _lazyYear.Value;
 
+    public static implicit operator DateModel(string? str)
+    {
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            return new DateModel("");
+        }
+        return new DateModel(str);
+    }
+
     public bool Equals(DateModel? other)
     {
         return other != null && other.Value == Value;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as DateModel);
+    }
+
+    public override int GetHashCode()
+    {
+        return Value.GetHashCode();
     }
 
     [GeneratedRegex(@"^(?<year>\d{4})\-(?<month>\d{2})\-(?<day>\d{2})$")]
@@ -70,14 +89,5 @@ public partial class DateModel : IEquatable<DateModel>
             return int.Parse(m.Groups["year"].Value);
         }
         return null;
-    }
-
-    public static implicit operator DateModel(string? str)
-    {
-        if (string.IsNullOrWhiteSpace(str))
-        {
-            return new DateModel("");
-        }
-        return new DateModel(str);
     }
 }

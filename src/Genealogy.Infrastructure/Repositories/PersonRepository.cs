@@ -19,7 +19,7 @@ internal class PersonRepository : EntityRepository<Guid, PersonEntity>, IPersonR
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         IQueryable<PersonEntity> q = m_dbContext.Persons;
-        foreach(var str in name.ToLowerInvariant().Split())
+        foreach (var str in name.ToLowerInvariant().Split())
         {
             q = q.Where(x => x.Name.Contains(str));
         }
@@ -31,7 +31,7 @@ internal class PersonRepository : EntityRepository<Guid, PersonEntity>, IPersonR
         await m_dbContext.Entry(entity)
                           .Collection(x => x.Events)
                           .LoadAsync();
-        foreach(var e in entity.Events)
+        foreach (var e in entity.Events)
         {
             await m_dbContext.Entry(e)
                              .Reference(x => x.Event)

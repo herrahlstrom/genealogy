@@ -49,7 +49,7 @@ public enum SourceType
 
 public enum MediaType
 {
-   Unknown = 0,
-   Potrait = 1,
-   Source = 2
+    Unknown = 0,
+    Potrait = 1,
+    Source = 2
 }

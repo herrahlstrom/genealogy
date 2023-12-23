@@ -15,6 +15,6 @@ internal class FamilyRepository : EntityRepository<Guid, FamilyEntity>, IFamilyR
 
     public Task LoadEvents(FamilyEntity entity)
     {
-        return m_dbContext.Entry(entity).Collection(x=> x.Events).LoadAsync();
+        return m_dbContext.Entry(entity).Collection(x => x.Events).LoadAsync();
     }
 }

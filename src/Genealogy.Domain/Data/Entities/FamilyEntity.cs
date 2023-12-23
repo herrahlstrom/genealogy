@@ -12,8 +12,8 @@ public class FamilyEntity : IEntity<Guid>
 
     public required Guid Id { get; init; }
 
-    public string Notes { get; set; } = ""; 
-    
+    public string Notes { get; set; } = "";
+
     public ICollection<FamilyEventMember> Events { get; } = new List<FamilyEventMember>(0);
 
 }
