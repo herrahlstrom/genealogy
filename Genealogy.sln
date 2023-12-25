@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogy.Console", "src\Ge
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogy.Shared", "src\Genealogy.Shared\Genealogy.Shared.csproj", "{24259EDE-9FB5-49D8-B3FD-E70C41C147C8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogy.PowerShell", "src\Genealogy.PowerShell\Genealogy.PowerShell.csproj", "{4DC39C45-B854-4891-8C7E-C2D94E264A03}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogy.Test", "tests\Genealogy.Test\Genealogy.Test.csproj", "{478A0EA7-EFFB-4E78-8599-7363AFE32F47}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogy.Infrastructure.Data", "src\Genealogy.Infrastructure.Data\Genealogy.Infrastructure.Data.csproj", "{8E29F4F5-C382-4EFE-8EB4-403A311E97D6}"
@@ -45,10 +43,6 @@ Global
 		{24259EDE-9FB5-49D8-B3FD-E70C41C147C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24259EDE-9FB5-49D8-B3FD-E70C41C147C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24259EDE-9FB5-49D8-B3FD-E70C41C147C8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4DC39C45-B854-4891-8C7E-C2D94E264A03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4DC39C45-B854-4891-8C7E-C2D94E264A03}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4DC39C45-B854-4891-8C7E-C2D94E264A03}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4DC39C45-B854-4891-8C7E-C2D94E264A03}.Release|Any CPU.Build.0 = Release|Any CPU
 		{478A0EA7-EFFB-4E78-8599-7363AFE32F47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{478A0EA7-EFFB-4E78-8599-7363AFE32F47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{478A0EA7-EFFB-4E78-8599-7363AFE32F47}.Release|Any CPU.ActiveCfg = Release|Any CPU
