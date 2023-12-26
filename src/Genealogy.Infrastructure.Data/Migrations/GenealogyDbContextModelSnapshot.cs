@@ -3,13 +3,14 @@ using System;
 using Genealogy.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace Genealogy.Infrastructure.Migrations
 {
     [DbContext(typeof(GenealogyDbContext))]
-    internal partial class GenealogyDbContextModelSnapshot : ModelSnapshot
+    partial class GenealogyDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -33,43 +34,48 @@ namespace Genealogy.Infrastructure.Migrations
                     b.ToTable("event_sources", (string)null);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Auth.RsaKey", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.Auth.Role", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("ActiveFrom")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("activeFrom");
+                    b.HasKey("Id");
 
-                    b.Property<DateTime>("ActiveTo")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("activeTo");
+                    b.ToTable("auth_roles", (string)null);
+                });
 
-                    b.Property<DateTime>("Created")
+            modelBuilder.Entity("Genealogy.Domain.Entities.Auth.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
-                        .HasColumnName("created");
+                        .HasColumnName("id");
 
-                    b.Property<string>("PemKey")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("pemKey");
+                        .HasColumnName("name");
 
-                    b.Property<DateTime>("ValidFrom")
+                    b.Property<string>("PasswordHash")
                         .HasColumnType("TEXT")
-                        .HasColumnName("validFrom");
+                        .HasColumnName("password_hash");
 
-                    b.Property<DateTime>("ValidTo")
+                    b.Property<string>("PasswordSalt")
                         .HasColumnType("TEXT")
-                        .HasColumnName("validTo");
+                        .HasColumnName("password_salt");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("username");
 
                     b.HasKey("Id");
 
-                    b.ToTable("rsa_keys", (string)null);
+                    b.ToTable("auth_users", (string)null);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.EventEntity", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.EventEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,7 +112,7 @@ namespace Genealogy.Infrastructure.Migrations
                     b.ToTable("events", (string)null);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.EventMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.EventMember", b =>
                 {
                     b.Property<Guid>("EventId")
                         .HasColumnType("TEXT")
@@ -135,7 +141,7 @@ namespace Genealogy.Infrastructure.Migrations
                     b.UseTptMappingStrategy();
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyEntity", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.FamilyEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -152,7 +158,7 @@ namespace Genealogy.Infrastructure.Migrations
                     b.ToTable("families", (string)null);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.FamilyMember", b =>
                 {
                     b.Property<Guid>("FamilyId")
                         .HasColumnType("TEXT")
@@ -182,7 +188,7 @@ namespace Genealogy.Infrastructure.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.MediaEntity", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.MediaEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -219,7 +225,7 @@ namespace Genealogy.Infrastructure.Migrations
                     b.ToTable("media", (string)null);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.PersonEntity", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.PersonEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -252,7 +258,7 @@ namespace Genealogy.Infrastructure.Migrations
                     b.ToTable("persons", (string)null);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.SourceEntity", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.SourceEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -298,6 +304,23 @@ namespace Genealogy.Infrastructure.Migrations
                     b.ToTable("sources", (string)null);
                 });
 
+            modelBuilder.Entity("Genealogy.Infrastructure.Data.Configurations.Auth.RoleConfiguration+RoleMember", b =>
+                {
+                    b.Property<string>("RoleId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("role_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("RoleId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("auth_role_members", (string)null);
+                });
+
             modelBuilder.Entity("PersonMedia", b =>
                 {
                     b.Property<Guid>("PersonId")
@@ -332,70 +355,70 @@ namespace Genealogy.Infrastructure.Migrations
                     b.ToTable("source_media", (string)null);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyEventMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.FamilyEventMember", b =>
                 {
-                    b.HasBaseType("Genealogy.Domain.Data.Entities.EventMember");
+                    b.HasBaseType("Genealogy.Domain.Entities.EventMember");
 
                     b.HasIndex("EntityId");
 
                     b.ToTable("event_members_family", (string)null);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.PersonEventMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.PersonEventMember", b =>
                 {
-                    b.HasBaseType("Genealogy.Domain.Data.Entities.EventMember");
+                    b.HasBaseType("Genealogy.Domain.Entities.EventMember");
 
                     b.HasIndex("EntityId");
 
                     b.ToTable("event_members_person", (string)null);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyChildMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.FamilyChildMember", b =>
                 {
-                    b.HasBaseType("Genealogy.Domain.Data.Entities.FamilyMember");
+                    b.HasBaseType("Genealogy.Domain.Entities.FamilyMember");
 
                     b.HasDiscriminator().HasValue(3);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyFosterChildMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.FamilyFosterChildMember", b =>
                 {
-                    b.HasBaseType("Genealogy.Domain.Data.Entities.FamilyMember");
+                    b.HasBaseType("Genealogy.Domain.Entities.FamilyMember");
 
                     b.HasDiscriminator().HasValue(4);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyHusbandMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.FamilyHusbandMember", b =>
                 {
-                    b.HasBaseType("Genealogy.Domain.Data.Entities.FamilyMember");
+                    b.HasBaseType("Genealogy.Domain.Entities.FamilyMember");
 
                     b.HasDiscriminator().HasValue(1);
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyWifeMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.FamilyWifeMember", b =>
                 {
-                    b.HasBaseType("Genealogy.Domain.Data.Entities.FamilyMember");
+                    b.HasBaseType("Genealogy.Domain.Entities.FamilyMember");
 
                     b.HasDiscriminator().HasValue(2);
                 });
 
             modelBuilder.Entity("EventSources", b =>
                 {
-                    b.HasOne("Genealogy.Domain.Data.Entities.EventEntity", null)
+                    b.HasOne("Genealogy.Domain.Entities.EventEntity", null)
                         .WithMany()
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Genealogy.Domain.Data.Entities.SourceEntity", null)
+                    b.HasOne("Genealogy.Domain.Entities.SourceEntity", null)
                         .WithMany()
                         .HasForeignKey("SourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.EventMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.EventMember", b =>
                 {
-                    b.HasOne("Genealogy.Domain.Data.Entities.EventEntity", "Event")
+                    b.HasOne("Genealogy.Domain.Entities.EventEntity", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -404,15 +427,15 @@ namespace Genealogy.Infrastructure.Migrations
                     b.Navigation("Event");
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.FamilyMember", b =>
                 {
-                    b.HasOne("Genealogy.Domain.Data.Entities.FamilyEntity", "Family")
+                    b.HasOne("Genealogy.Domain.Entities.FamilyEntity", "Family")
                         .WithMany("FamilyMembers")
                         .HasForeignKey("FamilyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Genealogy.Domain.Data.Entities.PersonEntity", "Person")
+                    b.HasOne("Genealogy.Domain.Entities.PersonEntity", "Person")
                         .WithMany("Families")
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -423,9 +446,9 @@ namespace Genealogy.Infrastructure.Migrations
                     b.Navigation("Person");
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.MediaEntity", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.MediaEntity", b =>
                 {
-                    b.OwnsMany("Genealogy.Domain.Data.Entities.MediaMeta", "Meta", b1 =>
+                    b.OwnsMany("Genealogy.Domain.Entities.MediaMeta", "Meta", b1 =>
                         {
                             b1.Property<Guid>("MediaId")
                                 .HasColumnType("TEXT")
@@ -451,15 +474,30 @@ namespace Genealogy.Infrastructure.Migrations
                     b.Navigation("Meta");
                 });
 
+            modelBuilder.Entity("Genealogy.Infrastructure.Data.Configurations.Auth.RoleConfiguration+RoleMember", b =>
+                {
+                    b.HasOne("Genealogy.Domain.Entities.Auth.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Genealogy.Domain.Entities.Auth.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("PersonMedia", b =>
                 {
-                    b.HasOne("Genealogy.Domain.Data.Entities.MediaEntity", "Media")
+                    b.HasOne("Genealogy.Domain.Entities.MediaEntity", "Media")
                         .WithMany()
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Genealogy.Domain.Data.Entities.PersonEntity", "Person")
+                    b.HasOne("Genealogy.Domain.Entities.PersonEntity", "Person")
                         .WithMany()
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -472,57 +510,57 @@ namespace Genealogy.Infrastructure.Migrations
 
             modelBuilder.Entity("SourceMedia", b =>
                 {
-                    b.HasOne("Genealogy.Domain.Data.Entities.MediaEntity", null)
+                    b.HasOne("Genealogy.Domain.Entities.MediaEntity", null)
                         .WithMany()
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Genealogy.Domain.Data.Entities.SourceEntity", null)
+                    b.HasOne("Genealogy.Domain.Entities.SourceEntity", null)
                         .WithMany()
                         .HasForeignKey("SourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyEventMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.FamilyEventMember", b =>
                 {
-                    b.HasOne("Genealogy.Domain.Data.Entities.FamilyEntity", null)
+                    b.HasOne("Genealogy.Domain.Entities.FamilyEntity", null)
                         .WithMany("Events")
                         .HasForeignKey("EntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Genealogy.Domain.Data.Entities.EventMember", null)
+                    b.HasOne("Genealogy.Domain.Entities.EventMember", null)
                         .WithOne()
-                        .HasForeignKey("Genealogy.Domain.Data.Entities.FamilyEventMember", "EventId", "EntityId")
+                        .HasForeignKey("Genealogy.Domain.Entities.FamilyEventMember", "EventId", "EntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.PersonEventMember", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.PersonEventMember", b =>
                 {
-                    b.HasOne("Genealogy.Domain.Data.Entities.PersonEntity", null)
+                    b.HasOne("Genealogy.Domain.Entities.PersonEntity", null)
                         .WithMany("Events")
                         .HasForeignKey("EntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Genealogy.Domain.Data.Entities.EventMember", null)
+                    b.HasOne("Genealogy.Domain.Entities.EventMember", null)
                         .WithOne()
-                        .HasForeignKey("Genealogy.Domain.Data.Entities.PersonEventMember", "EventId", "EntityId")
+                        .HasForeignKey("Genealogy.Domain.Entities.PersonEventMember", "EventId", "EntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.FamilyEntity", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.FamilyEntity", b =>
                 {
                     b.Navigation("Events");
 
                     b.Navigation("FamilyMembers");
                 });
 
-            modelBuilder.Entity("Genealogy.Domain.Data.Entities.PersonEntity", b =>
+            modelBuilder.Entity("Genealogy.Domain.Entities.PersonEntity", b =>
                 {
                     b.Navigation("Events");
 

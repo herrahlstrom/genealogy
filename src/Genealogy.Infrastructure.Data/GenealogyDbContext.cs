@@ -1,18 +1,19 @@
-﻿using Genealogy.Domain.Data.Auth;
-using Genealogy.Domain.Data.Entities;
+﻿using Genealogy.Domain.Entities;
+using Genealogy.Domain.Entities.Auth;
 using Microsoft.EntityFrameworkCore;
 
 namespace Genealogy.Infrastructure.Data;
 
 public class GenealogyDbContext : DbContext
 {
-    public DbSet<PersonEntity> Persons { get; set; }
-    public DbSet<FamilyEntity> Families { get; set; }
-    public DbSet<RsaKey> RsaKeys { get; set; }
 
     public GenealogyDbContext(DbContextOptions<GenealogyDbContext> options) : base(options)
     {
+        Auth = new GenealogyAuthDbSets(this);
     }
+    public GenealogyAuthDbSets Auth { get; }
+    public DbSet<FamilyEntity> Families { get; set; }
+    public DbSet<PersonEntity> Persons { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -21,5 +22,11 @@ public class GenealogyDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(GenealogyDbContext).Assembly);
+    }
+
+    public class GenealogyAuthDbSets(GenealogyDbContext dbContext)
+    {
+        public DbSet<Role> Roles => dbContext.Set<Role>();
+        public DbSet<User> Users => dbContext.Set<User>();
     }
 }

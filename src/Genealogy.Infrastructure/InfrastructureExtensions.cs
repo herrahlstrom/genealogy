@@ -1,4 +1,4 @@
-﻿using Genealogy.Domain.Data;
+﻿using Genealogy.Domain;
 using Genealogy.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,8 +26,8 @@ public static class InfrastructureExtensions
         {
             throw new InvalidOperationException("No connection string was configured");
         }
-        services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+                
+        services.AddSingleton<IAuthService, AuthService>();
 
         return services;
     }
