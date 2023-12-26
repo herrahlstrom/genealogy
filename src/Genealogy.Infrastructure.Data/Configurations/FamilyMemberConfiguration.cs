@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Genealogy.Domain.Data.Entities;
+using Genealogy.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

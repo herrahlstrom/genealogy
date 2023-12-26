@@ -1,0 +1,27 @@
+﻿@using Genealogy.Web.Models.Auth
+@model LoginRequest
+
+<div class="login-wrapper">
+
+    <form asp-controller="Auth" asp-action="Login">
+
+        <div class="login-content">
+            <div class="mb-4">
+                @Html.LabelFor(m => m.Username)
+                @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Username)
+            </div>
+            <div class="mb-4">
+                @Html.LabelFor(m => m.Password)
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Password)
+            </div>
+            <div class="mb-4">
+                <button type="submit" class="btn-primary">Logga in</button>
+            </div>
+            @Html.ValidationSummary(true)
+        </div>
+
+    </form>
+
+</div>

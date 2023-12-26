@@ -1,0 +1,41 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.validation-summary-errors {
+    background-color: #D9FFB2;
+    border: 1px solid #5CBA30;
+}
+
+    .validation-summary-errors ul {
+        margin: 0.5rem 1.0rem;
+        padding: 0;
+        list-style: none;
+    }
+
+        .validation-summary-errors ul li + li {
+            margin-top: 0.5rem;
+        }
+
+.field-validation-error {
+    color: #dc3545;
+}

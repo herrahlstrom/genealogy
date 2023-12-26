@@ -1,4 +1,4 @@
-﻿using Genealogy.Domain.Data;
+﻿using Genealogy.Domain;
 using Genealogy.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
