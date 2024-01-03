@@ -1,0 +1,81 @@
+﻿@using System.Timers
+@using System.Collections.Specialized
+@using Genealogy.Web.Components.Utilities
+@using Microsoft.AspNetCore.Components.Web
+@using System.Web
+@inject SearchAppState SearchAppState
+@inject NavigationManager NavManager
+
+
+<div class="search-groupbox">
+    <img src="/img/layout/search.png" alt="" />
+    <input type="text" name="query" class="form-control"
+           placeholder="Sök"
+           autocomplete="off"
+           @bind="Query" @bind:event="oninput"
+           @onkeydown="@OnKeyDown"
+           @onfocus="@OnFocus" />
+</div>
+
+@code {
+    private string _query = "";
+    private Timer _inputTimer = new Timer()
+        {
+            Interval = TimeSpan.FromSeconds(1).TotalMilliseconds,
+            AutoReset = false
+        };
+
+    protected override void OnInitialized()
+    {
+        _inputTimer.Elapsed += OnInputTimerElapsed;
+
+        NameValueCollection qString = HttpUtility.ParseQueryString(new Uri(NavManager.Uri).Query);
+        if (qString.GetStringValue("q") is { } q)
+        {
+            _query = q;
+        }
+    }
+
+    public string Query
+    {
+        get => _query;
+        set
+        {
+            if (_query != value)
+            {
+                _inputTimer.Enabled = false;
+                _query = value;
+                _inputTimer.Start();
+            }
+        }
+    }
+
+    private void DoSearch()
+    {
+        _inputTimer.Enabled = false;
+
+        SearchAppState.Search(Query);
+    }
+
+    private void OnInputTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        DoSearch();
+    }
+
+    public void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Code is "Enter" or "NumpadEnter")
+        {
+            DoSearch();
+        }
+    }
+
+    public void OnFocus(FocusEventArgs e)
+    {
+        if (!string.IsNullOrWhiteSpace(Query))
+        {
+            DoSearch();
+        }
+    }
+
+}

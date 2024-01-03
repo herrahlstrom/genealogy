@@ -1,0 +1,77 @@
+﻿
+.navbar .search-groupbox {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 0.6rem;
+    position: relative;
+}
+
+    .navbar .search-groupbox img {
+        height: 24px;
+        margin-top: -12px;
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        width: 24px;
+    }
+
+    .navbar .search-groupbox input[name=query] {
+        background: transparent;
+        border: none;
+        padding-right: 36px;
+        outline: none;
+    }
+
+
+#searchmodal-blender {
+    background-color: #000;
+    bottom: 0;
+    left: 0;
+    opacity: 0.4;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 9;
+}
+
+#searchmodal-holder {
+    bottom: 0;
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+    z-index: 20;
+}
+
+@media (min-width: 992px) {
+    #minisearch-holder {
+        width: 95%;
+    }
+}
+
+@media (min-width: 1200px) {
+    #minisearch-holder {
+        width: 90%;
+    }
+}
+
+#searchmodal {
+    background-color: #fff;
+    padding: 1rem;
+}
+
+    #searchmodal .searchmodal--result {
+    }
+
+    #searchmodal .searchmodal--result--item {
+        display: flex;
+        gap: 1rem;
+    }
+
+        #searchmodal .searchmodal--result--item .name {
+        }
+
+        #searchmodal .searchmodal--result--item .birth {
+        }

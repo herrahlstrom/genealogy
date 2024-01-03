@@ -1,11 +1,14 @@
-﻿<!DOCTYPE html>
+﻿@using Genealogy.Web.Components.Search
+<!DOCTYPE html>
 <html lang="en">
 <head>
+    <base href="/" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Genealogy</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-search.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Genealogy.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
@@ -22,15 +25,16 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
                     </ul>
+                    <component type="typeof(SearchInputComponent)" render-mode="WebAssembly" />
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
+    
+    <component type="typeof(SearchModalComponent)" render-mode="WebAssembly" />
+    
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -45,6 +49,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/site-search.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script src="/_framework/blazor.webassembly.js"></script>
 </body>
 </html>

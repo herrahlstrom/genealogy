@@ -1,0 +1,15 @@
+﻿h1 {
+    margin: 0;
+}
+
+.name {
+    font-size:0.9rem;
+}
+
+    .name .firstname {
+    }
+
+    .name .lastname {
+        text-transform: uppercase;
+        font-weight: 600;
+    }

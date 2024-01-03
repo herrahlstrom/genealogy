@@ -5,15 +5,14 @@ using System.Text.RegularExpressions;
 
 namespace Genealogy.Shared;
 
-public partial class DateModel : IEquatable<DateModel>
+public partial class DateModel : IEquatable<DateModel>, IComparable<DateModel>
 {
-    private static IFormatProvider FormatProvider = new CultureInfo("sv-SE");
     private readonly Lazy<DateOnly?> _lazyDate;
     private readonly Lazy<int?> _lazyYear;
 
-    public DateModel(string value)
+    public DateModel(string? value)
     {
-        Value = value;
+        Value = value ?? "";
         _lazyYear = new Lazy<int?>(GetYear);
         _lazyDate = new Lazy<DateOnly?>(GetDate);
     }
@@ -26,7 +25,7 @@ public partial class DateModel : IEquatable<DateModel>
         {
             if (Date is { } d)
             {
-                return d.ToString("d MMMM yyyy", FormatProvider);
+                return d.ToString("d MMM yyyy");
             }
             if (Year is { } y)
             {
@@ -49,6 +48,10 @@ public partial class DateModel : IEquatable<DateModel>
         return new DateModel(str);
     }
 
+    public override string ToString()
+    {
+        return Value;
+    }
     public bool Equals(DateModel? other)
     {
         return other != null && other.Value == Value;
@@ -89,5 +92,23 @@ public partial class DateModel : IEquatable<DateModel>
             return int.Parse(m.Groups["year"].Value);
         }
         return null;
+    }
+
+    public int CompareTo(DateModel? other)
+    {
+        if (other is null)
+            return -1;
+
+        if (Date.HasValue && other.Date.HasValue)
+        {
+            return Date.Value.CompareTo(other.Date.Value);
+        }
+
+        if (Year.HasValue && other.Year.HasValue)
+        {
+            return Year.Value.CompareTo(other.Year.Value);
+        }
+
+        return Value.CompareTo(other.Value);
     }
 }

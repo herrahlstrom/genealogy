@@ -1,0 +1,158 @@
+﻿@using System.Collections.Specialized
+@using System.Web
+@using Genealogy.Web.Components.Search.Models
+@using Genealogy.Web.Components.Utilities
+@using Microsoft.JSInterop
+@using System.Net.Http.Json
+@using System.Text.Json
+@inject SearchAppState SearchAppState
+@inject HttpClient _http
+@inject IJSRuntime _js;
+@inject NavigationManager NavManager
+
+<div id="searchmodal-blender" style="display: none;" @onclick="OnBlenderClick"></div>
+<div class="container">
+    <div class="position-relative">
+
+        <div id="searchmodal-holder" style="display: none;">
+
+            <div id="searchmodal">
+                @if (!string.IsNullOrWhiteSpace(_errorMessage))
+                {
+                    <div class="m-5 text-center alert-warning">@_errorMessage</div>
+                }
+                else if (_result == null)
+                {
+                    <div class="m-5 text-center">Laddar som bara den...</div>
+                }
+                else
+                {
+                    <div class="searchmodal--result">
+                        @foreach (var item in _result.Items)
+                        {
+                            <div class="searchmodal--result--item">
+                                <div class="name">
+                                    <a href="@item.Url">
+                                        @item.Name.DisplayName
+                                    </a>
+                                </div>
+                                <div class="birth">@item.BirthDate.DisplayDate</div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private SearchResult? _result;
+    private string? _currentQuery;
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SearchAppState.SearchEvent += OnSearchEvent;
+
+        NameValueCollection qString = HttpUtility.ParseQueryString(new Uri(NavManager.Uri).Query);
+        if (qString.GetStringValue("q") is { } q)
+        {
+            _currentQuery = q;
+
+            await UpdateSearch();
+        }
+    }
+
+    public void Dispose()
+    {
+        SearchAppState.SearchEvent -= OnSearchEvent;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _currentQuery != null)
+        {
+            await OpenSearchModal();
+        }
+    }
+
+    private async void OnSearchEvent(object? _, string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            await HideSearchModal();
+        }
+        else if (query != _currentQuery)
+        {
+            _currentQuery = query;
+
+            await OpenSearchModal();
+
+            await UpdateSearch();
+        }
+        else
+        {
+            await OpenSearchModal();
+        }
+
+        NavManager.NavigateTo(new UrlHelper(NavManager)
+            .SetQueryParameter("q", _currentQuery)
+            .ToString(), false);
+    }
+
+    private IEnumerable<KeyValuePair<string, string>> GetQueryParameters(int? cId = null)
+    {
+        if (!string.IsNullOrWhiteSpace(_currentQuery))
+        {
+            yield return new KeyValuePair<string, string>("q", _currentQuery);
+        }
+    }
+
+    private async Task UpdateSearch()
+    {
+        _errorMessage = null;
+        _result = null;
+
+        if (string.IsNullOrWhiteSpace(_currentQuery))
+        {
+            return;
+        }
+
+        try
+        {
+            var query = HttpUtility.ParseQueryString("");
+            query.Set("q", _currentQuery);
+
+            var jsonOptions = new JsonSerializerOptions().SetGenealogyDefault().AddGenealogyConverters();
+            _result = await _http.GetFromJsonAsync<SearchResult>($"persons/api/search?{query}", jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _result = null;
+            _errorMessage = ex.Message;
+        }
+
+        StateHasChanged();
+    }
+
+    private async void OnBlenderClick()
+    {
+        await HideSearchModal();
+    }
+
+    private async Task HideSearchModal()
+    {
+        NavManager.NavigateTo(new UrlHelper(NavManager)
+                .SetQueryParameter("q", null)
+                .ToString(), false);
+
+        await _js.InvokeVoidAsync("hideSearchModal");
+    }
+
+    private async Task OpenSearchModal()
+    {
+        await _js.InvokeVoidAsync("openSearchModal");
+    }
+}

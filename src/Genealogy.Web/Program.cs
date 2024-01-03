@@ -10,7 +10,9 @@ var builder = WebApplication.CreateBuilder(args)
                             .AddAuth()
                             .AddInfrastructure();
 
-builder.Services.AddControllersWithViews();
+builder.Services
+       .AddControllersWithViews()
+       .AddJsonOptions(options => options.JsonSerializerOptions.SetGenealogyDefault().AddGenealogyConverters());
 builder.Services.AddRazorPages();
 builder.Services.AddMemoryCache();
 
@@ -22,6 +24,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseWebAssemblyDebugging();
 }
 else
 {
@@ -30,6 +33,7 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();

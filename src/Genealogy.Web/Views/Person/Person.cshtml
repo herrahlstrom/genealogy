@@ -1,0 +1,21 @@
+﻿@model PersonViewModel
+
+<h1>@Model.Name.DisplayName</h1>
+<p class="name">
+    <span class="firstname">@Model.Name.FirstName</span>
+    <span class="lastname">@Model.Name.LastName</span>
+</p>
+
+@if (Model.Events is { Count: > 0 } events)
+{
+    <div class="d-flex gap-3 flex-wrap">
+        @foreach (var eventItem in events)
+        {
+            <div class="border border-secondary m-1 p-3 flex-fill">
+                <div>@eventItem.Name</div>
+                <div>@eventItem.Date -> @eventItem.EndDate</div>
+                <div>@eventItem.Location</div>
+            </div>
+        }
+    </div>
+}
