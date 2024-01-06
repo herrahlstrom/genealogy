@@ -31,6 +31,9 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(x => x.PasswordSalt)
                .HasColumnName("password_salt");
+
+        builder.Property(x => x.PersonId)
+               .HasColumnName("personId");
     }
 }
 

@@ -11,6 +11,7 @@ public class User
     public string? PasswordHash { get; private set; }
 
     public string? PasswordSalt { get; private set; }
+    public Guid? PersonId { get; init; }
 
     public List<Role> Roles { get; } = [];
 

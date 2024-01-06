@@ -63,7 +63,15 @@ public class AuthController : Controller
         {
             new(ClaimTypes.NameIdentifier, user.Username),
             new(ClaimTypes.Name, user.Name),
-        }.Concat(await authService.GetAuthClaims(user.Id));
+        };
+
+        if(user.PersonId != null)
+        {
+            claims.Add(new Claim(GenealogyClaimTypes.PersonId, $"{user.PersonId:D}"));
+        }
+
+        claims.AddRange(await authService.GetAuthClaims(user.Id));
+
 
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 

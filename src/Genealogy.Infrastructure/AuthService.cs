@@ -29,7 +29,7 @@ internal class AuthService(ILogger<AuthService> logger, IDbContextFactory<Geneal
         return user;
     }
 
-    public async Task<IEnumerable<Claim>> GetAuthClaims(Guid userId)
+    public async Task<IReadOnlyCollection<Claim>> GetAuthClaims(Guid userId)
     {
         using var dbContext = dbContextFactory.CreateDbContext();
 
@@ -38,7 +38,9 @@ internal class AuthService(ILogger<AuthService> logger, IDbContextFactory<Geneal
                            from role in user.Roles
                            select role.Id).Distinct()
                                           .ToListAsync();
-        return roles.Select(pId => new Claim(ClaimTypes.Role, pId));
+        var result = new List<Claim>(roles.Count);
+        result.AddRange(roles.Select(pId => new Claim(GenealogyClaimTypes.Role, pId)));
+        return result;
     }
 
     public async Task<User> Login(string username, string password)
