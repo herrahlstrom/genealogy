@@ -110,7 +110,7 @@ public class PersonController(IDbContextFactory<GenealogyDbContext> dbContextFac
             var person = await dbContext.Persons.Where(x => x.Id == id).Include(x => x.Events).ThenInclude(x => x.Event).FirstOrDefaultAsync()
                 ?? throw PersonNotFoundException.Create(id);
             DateModel? birthDate = person.Events
-                                         .Where(x => x.EventType == EventType.Födelse)
+                                         .Where(x => x.Event.Type == EventType.Födelse)
                                          .Select(x => x.Date ?? x.Event.Date)
                                          .FirstOrDefault();
 

@@ -36,9 +36,6 @@ internal class EventMemberConfiguration : IEntityTypeConfiguration<EventMember>
         builder.Property(x => x.EventId)
                .HasColumnName("eventId");
 
-        builder.Property(x => x.EventType)
-               .HasColumnName("type");
-
         builder.Property(x => x.Date)
                .HasColumnName("date");
 
