@@ -1,14 +1,16 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using Genealogy.Api.Auth;
 using Genealogy.Domain.Entities;
 using Genealogy.Infrastructure.Data;
+using Genealogy.Shared.Exceptions;
+using Genealogy.Shared.Models;
 using Genealogy.Web.Components.Search.Models;
 using Genealogy.Web.Models.Person;
 using Genealogy.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Genealogy.Api.Controllers;
 
@@ -16,45 +18,6 @@ namespace Genealogy.Api.Controllers;
 [Authorize(Policies.CanRead)]
 public class PersonController(IDbContextFactory<GenealogyDbContext> dbContextFactory) : Controller
 {
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Person(Guid id)
-    {
-        using var dbContext = dbContextFactory.CreateDbContext();
-        var person = await (from p in dbContext.Persons
-                            where p.Id == id
-                            select new
-                            {
-                                p.Id,
-                                p.Name
-                            }).FirstOrDefaultAsync();
-        if (person == null)
-        {
-            return NotFound();
-        }
-
-        var events = await (from p in dbContext.Persons
-                            where p.Id == id
-                            from e in p.Events
-                            select new
-                            {
-                                EventId = e.Event.Id,
-                                EventType = e.Event.Type,
-                                EventName = e.Event.Name,
-                                Date = e.Date ?? e.Event.Date,
-                                EndDate = e.EndDate ?? e.Event.EndDate,
-                                e.Event.Location
-                            }).ToListAsync();
-
-        return View(new PersonViewModel
-            {
-                Id = id,
-                Name = new PersonName(person.Name),
-                Events =
-                    (from e in events
-                     select new PersonEventViewModel(e.EventId, e.EventName ?? e.EventType.ToString(), e.Date, e.EndDate, e.Location)).ToList()
-            });
-    }
-
     [HttpGet("api/search")]
     public async Task<IActionResult> ApiSearch([FromQuery(Name = "q")] string? queryString)
     {
@@ -98,5 +61,123 @@ public class PersonController(IDbContextFactory<GenealogyDbContext> dbContextFac
         {
             Items = items
         });
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Person(Guid id)
+    {
+        using var dbContext = dbContextFactory.CreateDbContext();
+        try
+        {
+            var person = await (from p in dbContext.Persons
+                                where p.Id == id
+                                select new
+                                {
+                                    p.Id,
+                                    p.Name,
+                                    p.Sex,
+                                    p.Profession,
+                                    p.Notes
+                                }).FirstOrDefaultAsync() ?? throw PersonNotFoundException.Create(id);
+
+            var model = new PersonViewModel
+            {
+                Id = id,
+                Name = new PersonName(person.Name),
+                Sex = person.Sex,
+                Profession = person.Profession,
+                Notes = person.Notes,
+                TimelineProviderUrl = Url.Action(nameof(Timeline), new { id })
+            };
+
+            return View(model);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("{id}/timeline")]
+    public async Task<IActionResult> Timeline(Guid id)
+    {
+        using var dbContext = dbContextFactory.CreateDbContext();
+
+        List<TimelineItem> items = [];
+
+        try
+        {
+            var person = await dbContext.Persons.Where(x => x.Id == id).Include(x => x.Events).ThenInclude(x => x.Event).FirstOrDefaultAsync()
+                ?? throw PersonNotFoundException.Create(id);
+            DateModel? birthDate = person.Events
+                                         .Where(x => x.EventType == EventType.Födelse)
+                                         .Select(x => x.Date ?? x.Event.Date)
+                                         .FirstOrDefault();
+
+            items.AddRange(person.Events
+                                 .Select(x => new TimelineItem
+                                 {
+                                     EventId = x.EventId,
+                                     Name = x.Event.Name ?? x.Event.Type.ToString(),
+                                     Type = x.Event.Type,
+                                     Date = x.Date ?? x.Event.Date,
+                                     Location = x.Event.Location
+                                 }.SetRelativeAge(birthDate)));
+
+            // Load families when parent
+            await dbContext.Entry(person).Collection(x => x.Families).LoadAsync();
+            foreach (var familyMember in person.Families)
+            {
+                List<Tuple<string, Uri>>? links = null;
+
+                FamilyMember? partner = null;
+                if (familyMember.MemberType == FamilyMemberType.Husband || familyMember.MemberType == FamilyMemberType.Wife)
+                {
+                    await dbContext.Entry(familyMember)
+                                   .Reference(x => x.Family)
+                                   .Query()
+                                   .Include(x => x.Events)
+                                   .ThenInclude(x => x.Event)
+                                   .LoadAsync();
+                    var family = familyMember.Family;
+
+                    if(family.Events.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    await dbContext.Entry(family).Collection(x => x.FamilyMembers).LoadAsync();
+                    partner = family.FamilyMembers
+                                    .Where(x => x.MemberType == FamilyMemberType.Husband || x.MemberType == FamilyMemberType.Wife)
+                                    .Where(x => x.PersonId != id)
+                                    .SingleOrDefault();
+                    if (partner is not null)
+                    {
+                        await dbContext.Entry(partner).Reference(x => x.Person).LoadAsync();
+                        var partnerName = new PersonName(partner.Person.Name);
+                        var partnerUrl = Url.Action(nameof(Person), new { id = partner.PersonId })! ?? throw new UnreachableException();
+                        links ??= [];
+                        links.Add(Tuple.Create(partnerName.DisplayName, new Uri(partnerUrl, UriKind.RelativeOrAbsolute)));
+                    }
+
+                    items.AddRange(family.Events
+                                         .Select(x => new TimelineItem
+                                         {
+                                             EventId = x.EventId,
+                                             Name = x.Event.Name ?? x.Event.Type.GetDisplayName(),
+                                             Type = x.Event.Type,
+                                             Date = x.Date ?? x.Event.Date,
+                                             Location = x.Event.Location,
+                                             Links = links
+                                         }.SetRelativeAge(birthDate)));
+                }
+            }
+
+            return Ok(items.OrderBy(x=> x.Date));
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
     }
 }

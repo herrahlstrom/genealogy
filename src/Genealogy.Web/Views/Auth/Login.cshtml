@@ -1,5 +1,10 @@
 ﻿@model LoginRequest
 
+@section Style
+{
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+}
+
 <div class="login-wrapper">
 
     <form asp-controller="Auth" asp-action="Login">
@@ -15,8 +20,8 @@
                 @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.Password)
             </div>
-            <div class="mb-4">
-                <button type="submit" class="btn-primary">Logga in</button>
+            <div>
+                <button type="submit" class="btn btn-primary">Logga in</button>
             </div>
             @Html.ValidationSummary(true)
         </div>

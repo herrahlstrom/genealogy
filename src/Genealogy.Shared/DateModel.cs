@@ -19,20 +19,17 @@ public partial class DateModel : IEquatable<DateModel>, IComparable<DateModel>
 
     public DateOnly? Date => _lazyDate.Value;
 
-    public string DisplayDate
+    public string GetDisplayDate()
     {
-        get
+        if (Date is { } d)
         {
-            if (Date is { } d)
-            {
-                return d.ToString("d MMM yyyy");
-            }
-            if (Year is { } y)
-            {
-                return y.ToString();
-            }
-            return Value;
+            return d.ToString("d MMM yyyy");
         }
+        if (Year is { } y)
+        {
+            return y.ToString();
+        }
+        return Value;
     }
 
     public bool HasValue => Value is { Length: > 0 };

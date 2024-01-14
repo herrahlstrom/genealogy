@@ -1,0 +1,12 @@
+﻿.field-validation-error {
+    font-size: 0.9rem;
+}
+
+.validation-summary-errors {
+    margin-top: 1.5rem;
+}
+
+
+.login-wrapper .login-content label {
+    margin-left: 0.5rem;
+}

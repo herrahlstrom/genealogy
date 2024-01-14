@@ -1,9 +1,8 @@
-﻿using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Genealogy.Domain;
 using Genealogy.Domain.Entities.Auth;
-using Genealogy.Domain.Exceptions;
 using Genealogy.Infrastructure.Data;
+using Genealogy.Shared.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

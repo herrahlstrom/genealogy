@@ -1,0 +1,142 @@
+﻿@using Genealogy.Shared.Models
+@using System.Text
+@using System.Net.Http.Json
+@using System.Text.Json
+@using System.Diagnostics
+@inject HttpClient _http
+
+@if (TimelineItems is { Count: > 0 } items)
+{
+    <div class="timeline-wrapper">
+        @if (FilterItems.Count > 0)
+        {
+            <ul class="timeline-filter">
+                @foreach (var filterItem in FilterItems)
+                {
+                    <li>
+                        <input type="checkbox" @bind="@FilterItems[filterItem.Key].Enabled" @bind:after="FilterChanged" id="filter_@(filterItem.Key)">
+                        <label for="filter_@(filterItem.Key)">@filterItem.Value.DisplayName</label>
+                    </li>
+                }
+            </ul>
+        }
+
+        <ul class="timeline">
+            @foreach (TimelineItem eventItem in items)
+            {
+                if (FilterItems.TryGetValue(eventItem.Type, out var filterItem) && !filterItem.Enabled)
+                {
+                    continue;
+                }
+
+                IEnumerable<string> GetMetaValues()
+                {
+                    if (eventItem.Date != null)
+                        yield return eventItem.Date.GetDisplayDate();
+                    if (eventItem.Location != null)
+                        yield return eventItem.Location;
+                }
+                var metaString = GetMetaValues().Aggregate(new StringBuilder(), (sb, str) => sb.Append(sb.Length > 0 ? " | " : "").Append(str), sb => sb.ToString());
+                string eventCardCss = "eventCard" + eventItem.Type switch
+                {
+                    EventType.Födelse => " eventCard-birth",
+                    EventType.Död => " eventCard-death",
+                    EventType.Gift => " eventCard-married",
+                    EventType.Flytt => " eventCard-dim",
+                    EventType.Boende => " eventCard-dim",
+                    _ => ""
+                };
+
+                <li class="event">
+                    <div class="bullet">
+                        <div class="facts">
+                            <div class="factsDate">@eventItem.Date?.Year</div>
+                            @if (@eventItem.RelativeAge > 0)
+                            {
+                                <div class="factsAge">@eventItem.RelativeAge år</div>
+                            }
+                        </div>
+                    </div>
+                    <div class="@(eventCardCss)">
+                        <div class="name">@eventItem.Name</div>
+                        <div class="meta">@metaString</div>
+                        @if (eventItem.Links?.Count > 0)
+                        {
+                            <ul class="links">
+                                @foreach (var linkItem in eventItem.Links)
+                                {
+                                    <li class="link"><a href="@linkItem.Item2">@linkItem.Item1</a></li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+@code {
+
+    private IList<TimelineItem>? TimelineItems { get; set; }
+    private SortedDictionary<EventType, TimelineFilterItem> FilterItems { get; } = [];
+
+    [Parameter]
+    public string? TimelineProviderUrl { get; set; }
+
+    private void FilterChanged()
+    {
+        StateHasChanged();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (TimelineItems is null && TimelineProviderUrl != null)
+        {
+            var jsonOptions = new JsonSerializerOptions().SetGenealogyDefault().AddGenealogyConverters();
+            TimelineItems = await _http.GetFromJsonAsync<TimelineItem[]>(TimelineProviderUrl, jsonOptions) ?? throw new UnreachableException();
+
+            FilterItems.Clear();
+            FilterItems.AddRange(GetFilterItems().OrderBy(x => x.Value.DisplayName));
+
+            StateHasChanged();
+        }
+    }
+
+    private IEnumerable<KeyValuePair<EventType, TimelineFilterItem>> GetFilterItems()
+    {
+        if (TimelineItems is null)
+        {
+            yield break;
+        }
+
+        var eventTypes = TimelineItems.GroupBy(x => x.Type).Select(x => new { x.Key, Count = x.Count() });
+        foreach (var type in eventTypes)
+        {
+            if (DefaultFilterEnabled(type.Key) is { } enabled)
+            {
+                var filterItem = new TimelineFilterItem
+                    {
+                        Type = type.Key,
+                        DisplayName = $"{type.Key.GetDisplayName()} ({type.Count})",
+                        Enabled = enabled
+                    };
+                yield return new(type.Key, filterItem);
+            }
+        }
+    }
+
+    private bool? DefaultFilterEnabled(EventType type) => type switch
+    {
+        // non filterable types
+        EventType.Födelse => null,
+        EventType.Död => null,
+
+        // Unselected as default
+        EventType.Boende => false,
+        EventType.Flytt => false,
+
+        // The rest is selected as default
+        _ => true
+    };
+}

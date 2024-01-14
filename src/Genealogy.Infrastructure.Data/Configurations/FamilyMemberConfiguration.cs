@@ -10,17 +10,13 @@ internal class FamilyMemberConfiguration : IEntityTypeConfiguration<FamilyMember
 {
     public void Configure(EntityTypeBuilder<FamilyMember> builder)
     {
-        /* Shadow properties */
-        const string FamilyIdProperty = "FamilyId";
-        const string PersonIdProperty = "PersonId";
-
         builder.ToTable("family_members")
-               .HasKey(FamilyIdProperty, PersonIdProperty);
+               .HasKey(x => new { x.FamilyId, x.PersonId });
 
-        builder.Property(FamilyIdProperty)
+        builder.Property(x => x.FamilyId)
                .HasColumnName("familyId");
 
-        builder.Property(PersonIdProperty)
+        builder.Property(x => x.PersonId)
                .HasColumnName("personId");
 
         builder.Property(x => x.MemberType)
@@ -30,7 +26,7 @@ internal class FamilyMemberConfiguration : IEntityTypeConfiguration<FamilyMember
         /* Indecies */
 
         builder
-            .HasIndex(FamilyIdProperty, nameof(FamilyMember.MemberType))
+            .HasIndex(x => new { x.FamilyId, x.MemberType })
             .HasFilter($"memberType IN ({(int)FamilyMemberType.Husband},{(int)FamilyMemberType.Wife})")
             .IsUnique()
             .HasDatabaseName("IX_UniqueParentPerFamily");
@@ -45,7 +41,13 @@ internal class FamilyMemberConfiguration : IEntityTypeConfiguration<FamilyMember
 
         /* Navigations */
 
-        builder.HasOne(x => x.Family).WithMany(x => x.FamilyMembers).HasForeignKey(FamilyIdProperty).OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne(x => x.Person).WithMany(x => x.Families).HasForeignKey(PersonIdProperty).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.Family)
+               .WithMany(x => x.FamilyMembers)
+               .HasForeignKey(x => x.FamilyId)
+               .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.Person)
+               .WithMany(x => x.Families)
+               .HasForeignKey(x => x.PersonId)
+               .OnDelete(DeleteBehavior.Restrict);
     }
 }

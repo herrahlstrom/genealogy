@@ -3,7 +3,7 @@
 }
 
 .name {
-    font-size:0.9rem;
+    font-size: 0.9rem;
 }
 
     .name .firstname {
@@ -13,3 +13,8 @@
         text-transform: uppercase;
         font-weight: 600;
     }
+
+.person-content {
+    display: flex;
+    margin-top: 1rem;
+}

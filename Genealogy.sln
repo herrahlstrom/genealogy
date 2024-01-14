@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogy.Infrastructure.Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogy.Web", "src\Genealogy.Web\Genealogy.Web.csproj", "{7201EFA4-4DBF-488C-BB5B-AB9D0A4CB941}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Genealogy.Web.Components", "src\Genealogy.Web.Components\Genealogy.Web.Components.csproj", "{484CE5F6-9EE0-4A73-B460-63BBB236BAA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogy.Web.Components", "src\Genealogy.Web.Components\Genealogy.Web.Components.csproj", "{484CE5F6-9EE0-4A73-B460-63BBB236BAA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

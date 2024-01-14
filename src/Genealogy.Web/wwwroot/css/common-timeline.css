@@ -1,0 +1,113 @@
+﻿
+.timeline-wrapper {
+}
+
+ul.timeline-filter {
+    list-style: none;
+    padding-left: 0;
+}
+
+    ul.timeline-filter li {
+        display: inline;
+        margin-left: 1rem;
+    }
+
+ul.timeline {
+    list-style: none;
+    padding-left: 5rem;
+}
+
+    ul.timeline li.event {
+        position: relative;        
+    }
+
+        ul.timeline li.event + li.event {
+            margin-top: 10px;
+        }
+
+        ul.timeline li.event:has(+ li.event):after {
+            background-color: #7a7a77;
+            content: "";
+            display: block;
+            height: calc(100% + 10px);
+            position: absolute;
+            left: -14px;
+            top: 16px;
+            width: 2px;
+            z-index: 2;
+        }
+
+        ul.timeline li.event .bullet {
+            background-color: #7a7a77;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 2;
+            height: 8px;
+            left: -17px;
+            top: 9px;
+            width: 8px;
+        }
+
+            ul.timeline li.event .bullet .facts {
+                line-height: 1;
+                margin-top: -3px;
+                position: absolute;
+                right: 100%;
+                text-align: center;
+                text-shadow: none;
+                text-transform: none;
+                width: 52px;
+                font-size: 0.9rem;
+            }
+
+                ul.timeline li.event .bullet .facts .factsDate {
+                    font-weight: 600;
+                }
+
+                ul.timeline li.event .bullet .facts .factsAge {
+                }
+
+
+        ul.timeline li.event .eventCard {
+            border-radius: 0.5rem;
+            box-shadow: 0 0 0.5rem rgba(0,0,0,.16);
+            display: block;
+            padding: 0.3rem 0.5rem;
+            line-height: 1;
+            position: relative;
+            background-color: #fff;
+        }
+
+            ul.timeline li.event .eventCard.eventCard-dim {
+                background-color: inherit;
+                opacity: 0.8;
+            }
+
+            ul.timeline li.event .eventCard.eventCard-birth {
+                background-color: #dfd;
+            }
+
+            ul.timeline li.event .eventCard.eventCard-death {
+                background-color: #fdd;
+            }
+
+            ul.timeline li.event .eventCard.eventCard-married {
+                background-color: #ffd;
+            }
+
+            ul.timeline li.event .eventCard .name {
+                font-weight: 600;
+            }
+
+            ul.timeline li.event .eventCard .meta {
+                font-size: 0.9rem;
+            }
+
+            ul.timeline li.event .eventCard ul.links {
+                list-style: none;
+                padding-left: 0;
+            }
+
+                ul.timeline li.event .eventCard ul.links li.link {
+                    font-size: 0.9rem;
+                }

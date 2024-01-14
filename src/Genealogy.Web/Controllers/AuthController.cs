@@ -1,5 +1,5 @@
 ﻿using Genealogy.Domain.Entities.Auth;
-using Genealogy.Domain.Exceptions;
+using Genealogy.Shared.Exceptions;
 using Genealogy.Web.Models.Auth;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
@@ -72,22 +72,24 @@ public class AuthController : Controller
 
         claims.AddRange(await authService.GetAuthClaims(user.Id));
 
-
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(claimsIdentity),
-            new AuthenticationProperties { IsPersistent = true });
+            new AuthenticationProperties
+            {
+                IsPersistent = true
+            });
 
         return RedirectToAction("Index", "Home");
     }
-
+    
+    [HttpGet("logout")]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync();
         return RedirectToAction("Index", "Home");
     }
-
 }

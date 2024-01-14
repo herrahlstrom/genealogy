@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Genealogy.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,9 @@ internal class PersonConfiguration : IEntityTypeConfiguration<PersonEntity>
                .HasColumnName("profession");
 
         builder.Property(x => x.Sex)
-               .HasColumnName("sex");
+               .HasColumnName("sex")
+               .HasConversion<string>(sex => Convert(sex), str => Convert(str));
+
 
         builder.HasMany(x => x.Media)
                .WithMany()
@@ -44,4 +47,17 @@ internal class PersonConfiguration : IEntityTypeConfiguration<PersonEntity>
         builder.HasMany(x => x.Events).WithOne().HasForeignKey(x => x.EntityId);
     }
 
+    private static PersonSex Convert(string str) => str switch
+    {
+        "M" => PersonSex.Male,
+        "F" => PersonSex.Female,
+        _ => throw new ArgumentException($"Invalid sex; {str}")
+    };
+
+    private static string Convert(PersonSex sex) => sex switch
+    {
+        PersonSex.Male => "M",
+        PersonSex.Female => "F",
+        _ => throw new ArgumentException($"Invalid sex; {sex}")
+    };
 }

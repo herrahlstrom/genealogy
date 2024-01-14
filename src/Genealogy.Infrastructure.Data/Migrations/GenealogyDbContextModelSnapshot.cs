@@ -452,7 +452,7 @@ namespace Genealogy.Infrastructure.Migrations
 
             modelBuilder.Entity("Genealogy.Domain.Entities.MediaEntity", b =>
                 {
-                    b.OwnsMany("Genealogy.Domain.Entities.MediaMeta", "Meta", b1 =>
+                    b.OwnsMany("Genealogy.Domain.Entities.MediaEntity.Meta#Genealogy.Domain.Entities.MediaMeta", "Meta", b1 =>
                         {
                             b1.Property<Guid>("MediaId")
                                 .HasColumnType("TEXT")

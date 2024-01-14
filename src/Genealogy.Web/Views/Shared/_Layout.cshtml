@@ -6,10 +6,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Genealogy</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-search.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-search.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/common-timeline.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Genealogy.Web.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Style", required: false)
 </head>
 <body>
     <header>
@@ -26,15 +29,37 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                     </ul>
-                    <component type="typeof(SearchInputComponent)" render-mode="WebAssembly" />
-                    <partial name="_LoginPartial" />
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <component type="typeof(SearchInputComponent)" render-mode="WebAssembly" />
+                    }
+
+                    <ul class="navbar-nav">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarUserDropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    @User.Identity.Name
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarUserDropdownMenuLink">
+                                    <a class="dropdown-item" asp-controller="Auth" asp-action="Logout">Logga ut</a>
+                                    <div class="separator"></div>
+                                    @if (User.FindFirst(GenealogyClaimTypes.PersonId) is { Value: { Length: > 0 } personId })
+                                    {
+                                        <a class="dropdown-item text-dark" asp-controller="Person" asp-action="Person" asp-route-id="@personId">Visa person</a>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>
     </header>
-    
+
     <component type="typeof(SearchModalComponent)" render-mode="WebAssembly" />
-    
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -46,8 +71,8 @@
             &copy; 2023 - WebApplication1 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/site-search.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

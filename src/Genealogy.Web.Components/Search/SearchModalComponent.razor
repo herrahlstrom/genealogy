@@ -31,12 +31,9 @@
                         @foreach (var item in _result.Items)
                         {
                             <div class="searchmodal--result--item">
-                                <div class="name">
-                                    <a href="@item.Url">
-                                        @item.Name.DisplayName
-                                    </a>
+                                <div>
+                                    <span class="small">(@item.BirthDate?.Year)</span> <a href="@item.Url">@item.Name.DisplayName</a>
                                 </div>
-                                <div class="birth">@item.BirthDate.DisplayDate</div>
                             </div>
                         }
                     </div>

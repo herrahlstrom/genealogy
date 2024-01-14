@@ -36,7 +36,7 @@ public class DateModelTest
         string expectedDisplayDate = "5 september 1984";
 
         var date = new DateModel(input);
-        date.DisplayDate.Should().BeEquivalentTo(expectedDisplayDate);
+        date.GetDisplayDate().Should().BeEquivalentTo(expectedDisplayDate);
     }
 
     [TestMethod]
@@ -46,7 +46,7 @@ public class DateModelTest
     public void PartialDate_ShouldParseYear(string input, string expectedDisplayDate)
     {
         var date = new DateModel(input);
-        date.DisplayDate.Should().Be(expectedDisplayDate);
+        date.GetDisplayDate().Should().Be(expectedDisplayDate);
     }
 
     [TestMethod]
@@ -60,6 +60,6 @@ public class DateModelTest
         date.Year.Should().BeNull();
 
         // Invalid dates should always return original value as display date
-        date.DisplayDate.Should().Be(input);
+        date.GetDisplayDate().Should().Be(input);
     }
 }

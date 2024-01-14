@@ -20,7 +20,7 @@ public class PersonEntity : IEntity<Guid>
 
     public string Profession { get; set; } = "";
 
-    public required string Sex { get; set; }
+    public required PersonSex Sex { get; set; }
 
     public ICollection<PersonEventMember> Events { get; } = new List<PersonEventMember>(0);
 }

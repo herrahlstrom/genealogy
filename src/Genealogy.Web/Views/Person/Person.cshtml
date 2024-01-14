@@ -1,21 +1,27 @@
-﻿@model PersonViewModel
+﻿@using Genealogy.Web.Components.Person
+@using System.Text
+@using Genealogy.Domain.Entities
+@model PersonViewModel
 
 <h1>@Model.Name.DisplayName</h1>
-<p class="name">
+<div class="name">
     <span class="firstname">@Model.Name.FirstName</span>
     <span class="lastname">@Model.Name.LastName</span>
-</p>
+</div>
 
-@if (Model.Events is { Count: > 0 } events)
+@if (@Model.Profession is { Length: > 0 } profession)
 {
-    <div class="d-flex gap-3 flex-wrap">
-        @foreach (var eventItem in events)
-        {
-            <div class="border border-secondary m-1 p-3 flex-fill">
-                <div>@eventItem.Name</div>
-                <div>@eventItem.Date -> @eventItem.EndDate</div>
-                <div>@eventItem.Location</div>
-            </div>
-        }
-    </div>
+    <div class="profession">@profession</div>
 }
+
+@if (@Model.Notes is { Length: > 0 } notes)
+{
+    <div class="notes">@notes</div>
+}
+
+<div class="person-content">
+
+    <component type="typeof(TimelineComponent)" render-mode="WebAssembly"
+               param-TimelineProviderUrl="@Model.TimelineProviderUrl" />
+
+</div>

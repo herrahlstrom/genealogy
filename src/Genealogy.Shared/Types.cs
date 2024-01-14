@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Genealogy.Domain.Entities;
+namespace Genealogy;
 
 public enum EventType
 {
@@ -33,6 +33,18 @@ public enum FamilyMemberType
     [Display(Name = "Fosterbarn")] FosterChild = 4
 }
 
+public enum MediaType
+{
+    [Display(Name = "Okänd")]
+    Unknown = 0,
+
+    [Display(Name = "Porträtt")]
+    Potrait = 1,
+
+    [Display(Name = "Källa")]
+    Source = 2
+}
+
 public enum SourceType
 {
     None = 0,
@@ -47,9 +59,8 @@ public enum SourceType
     ArkivDigital = 3
 }
 
-public enum MediaType
+public enum PersonSex
 {
-    Unknown = 0,
-    Potrait = 1,
-    Source = 2
+    Male = 'M',
+    Female = 'F',
 }

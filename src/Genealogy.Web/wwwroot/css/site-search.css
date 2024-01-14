@@ -59,7 +59,9 @@
 
 #searchmodal {
     background-color: #fff;
+    border: 1px solid #666;
     padding: 1rem;
+    border-radius: 0.5rem;
 }
 
     #searchmodal .searchmodal--result {
@@ -70,8 +72,3 @@
         gap: 1rem;
     }
 
-        #searchmodal .searchmodal--result--item .name {
-        }
-
-        #searchmodal .searchmodal--result--item .birth {
-        }

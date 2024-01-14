@@ -19,6 +19,9 @@ public abstract class FamilyMember
     {
         MemberType = memberType;
     }
+    
+    public Guid PersonId { get; init; }
+    public Guid FamilyId { get; init; }
 
     public required FamilyEntity Family { get; init; }
     public required PersonEntity Person { get; init; }
