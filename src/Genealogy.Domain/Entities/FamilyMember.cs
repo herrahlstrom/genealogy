@@ -8,9 +8,9 @@ public class FamilyFosterChildMember : FamilyMember
 {
     public FamilyFosterChildMember() : base(FamilyMemberType.FosterChild) { }
 }
-public class FamilyHusbandMember : FamilyMember
+public class FamilyParentMember : FamilyMember
 {
-    public FamilyHusbandMember() : base(FamilyMemberType.Husband) { }
+    public FamilyParentMember() : base(FamilyMemberType.Parent) { }
 }
 
 public abstract class FamilyMember
@@ -26,8 +26,4 @@ public abstract class FamilyMember
     public required FamilyEntity Family { get; init; }
     public required PersonEntity Person { get; init; }
     public FamilyMemberType MemberType { get; }
-}
-public class FamilyWifeMember : FamilyMember
-{
-    public FamilyWifeMember() : base(FamilyMemberType.Wife) { }
 }

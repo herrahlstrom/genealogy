@@ -23,19 +23,10 @@ internal class FamilyMemberConfiguration : IEntityTypeConfiguration<FamilyMember
                .HasColumnName("memberType")
                .HasConversion<int>();
 
-        /* Indecies */
-
-        builder
-            .HasIndex(x => new { x.FamilyId, x.MemberType })
-            .HasFilter($"memberType IN ({(int)FamilyMemberType.Husband},{(int)FamilyMemberType.Wife})")
-            .IsUnique()
-            .HasDatabaseName("IX_UniqueParentPerFamily");
-
         /* Discriminator */
 
         builder.HasDiscriminator<FamilyMemberType>(x => x.MemberType)
-               .HasValue<FamilyHusbandMember>(FamilyMemberType.Husband)
-               .HasValue<FamilyWifeMember>(FamilyMemberType.Wife)
+               .HasValue<FamilyParentMember>(FamilyMemberType.Parent)
                .HasValue<FamilyChildMember>(FamilyMemberType.Child)
                .HasValue<FamilyFosterChildMember>(FamilyMemberType.FosterChild);
 

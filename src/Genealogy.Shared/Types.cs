@@ -27,8 +27,7 @@ public enum FamilyMemberType
 {
     None = 0,
 
-    [Display(Name = "Far")] Husband = 1,
-    [Display(Name = "Mor")] Wife = 2,
+    [Display(Name = "Förälder")] Parent = 1,
     [Display(Name = "Barn")] Child = 3,
     [Display(Name = "Fosterbarn")] FosterChild = 4
 }

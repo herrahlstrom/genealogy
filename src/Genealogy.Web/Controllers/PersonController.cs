@@ -131,7 +131,7 @@ public class PersonController(IDbContextFactory<GenealogyDbContext> dbContextFac
                 List<Tuple<string, Uri>>? links = null;
 
                 FamilyMember? partner = null;
-                if (familyMember.MemberType == FamilyMemberType.Husband || familyMember.MemberType == FamilyMemberType.Wife)
+                if (familyMember is FamilyParentMember)
                 {
                     await dbContext.Entry(familyMember)
                                    .Reference(x => x.Family)
@@ -148,7 +148,7 @@ public class PersonController(IDbContextFactory<GenealogyDbContext> dbContextFac
 
                     await dbContext.Entry(family).Collection(x => x.FamilyMembers).LoadAsync();
                     partner = family.FamilyMembers
-                                    .Where(x => x.MemberType == FamilyMemberType.Husband || x.MemberType == FamilyMemberType.Wife)
+                                    .Where(x => x.MemberType == FamilyMemberType.Parent)
                                     .Where(x => x.PersonId != id)
                                     .SingleOrDefault();
                     if (partner is not null)
