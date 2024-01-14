@@ -37,11 +37,11 @@ public class TimelineItem
             return null;
         }
 
-        if (birthDate is { Date: { } refDate })
+        if (this.Date is { Date: { } refDate })
         {
             b = refDate.ToDateTime(TimeOnly.MinValue);
         }
-        else if (birthDate is { } bs && bs.Year is { } refYear)
+        else if (this.Date is { } bs && bs.Year is { } refYear)
         {
             b = new DateTime(refYear, 1, 1);
         }

@@ -1,24 +1,10 @@
-﻿
-.timeline-wrapper {
-}
-
-ul.timeline-filter {
-    list-style: none;
-    padding-left: 0;
-}
-
-    ul.timeline-filter li {
-        display: inline;
-        margin-left: 1rem;
-    }
-
-ul.timeline {
+﻿ul.timeline {
     list-style: none;
     padding-left: 5rem;
 }
 
     ul.timeline li.event {
-        position: relative;        
+        position: relative;
     }
 
         ul.timeline li.event + li.event {
@@ -78,30 +64,26 @@ ul.timeline {
             background-color: #fff;
         }
 
-            ul.timeline li.event .eventCard.eventCard-dim {
-                background-color: inherit;
-                opacity: 0.8;
-            }
-
-            ul.timeline li.event .eventCard.eventCard-birth {
-                background-color: #dfd;
-            }
-
-            ul.timeline li.event .eventCard.eventCard-death {
-                background-color: #fdd;
-            }
-
-            ul.timeline li.event .eventCard.eventCard-married {
-                background-color: #ffd;
-            }
 
             ul.timeline li.event .eventCard .name {
                 font-weight: 600;
             }
 
-            ul.timeline li.event .eventCard .meta {
+            ul.timeline li.event .eventCard ul.meta {
                 font-size: 0.9rem;
+                list-style: none;
+                padding: 0;
             }
+
+                ul.timeline li.event .eventCard ul.meta li {
+                    display: inline-block;
+                }
+
+                    ul.timeline li.event .eventCard ul.meta li + li::before {
+                        content: '|';
+                        margin-right: 0.3rem;
+                        margin-left: 0.3rem;
+                    }
 
             ul.timeline li.event .eventCard ul.links {
                 list-style: none;
@@ -111,3 +93,19 @@ ul.timeline {
                 ul.timeline li.event .eventCard ul.links li.link {
                     font-size: 0.9rem;
                 }
+
+    ul.timeline li.event-regular .eventCard {
+    }
+
+    ul.timeline li.event.event-small .eventCard {
+        display: flex;
+        gap: 1rem;
+    }
+
+        ul.timeline li.event.event-small .eventCard .meta .date {
+            display: none;
+        }
+
+    ul.timeline li.event.event-small .bullet .facts .factsAge {
+        display: none;
+    }

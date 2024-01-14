@@ -80,6 +80,8 @@ public class PersonController(IDbContextFactory<GenealogyDbContext> dbContextFac
                                     p.Notes
                                 }).FirstOrDefaultAsync() ?? throw PersonNotFoundException.Create(id);
 
+            var timelineItems = await GetTimelineItems(id);
+
             var model = new PersonViewModel
             {
                 Id = id,
@@ -87,7 +89,7 @@ public class PersonController(IDbContextFactory<GenealogyDbContext> dbContextFac
                 Sex = person.Sex,
                 Profession = person.Profession,
                 Notes = person.Notes,
-                TimelineProviderUrl = Url.Action(nameof(Timeline), new { id })
+                TimelineItems = timelineItems
             };
 
             return View(model);
@@ -97,87 +99,98 @@ public class PersonController(IDbContextFactory<GenealogyDbContext> dbContextFac
             return NotFound();
         }
     }
-
-    [HttpGet("{id}/timeline")]
-    public async Task<IActionResult> Timeline(Guid id)
+    
+    private async Task<List<TimelineItem>> GetTimelineItems(Guid id)
     {
         using var dbContext = dbContextFactory.CreateDbContext();
 
+        var person = await dbContext.Persons.Where(x => x.Id == id).Include(x => x.Events).ThenInclude(x => x.Event).FirstOrDefaultAsync()
+                ?? throw PersonNotFoundException.Create(id);
+        DateModel? birthDate = person.Events
+                                     .Where(x => x.Event.Type == EventType.Födelse)
+                                     .Select(x => x.Date ?? x.Event.Date)
+                                     .FirstOrDefault();
+
         List<TimelineItem> items = [];
 
-        try
+        items.AddRange(person.Events
+                             .Select(x => new TimelineItem
+                             {
+                                 EventId = x.EventId,
+                                 Name = x.Event.Name ?? x.Event.Type.ToString(),
+                                 Type = x.Event.Type,
+                                 Date = x.Date ?? x.Event.Date,
+                                 Location = x.Event.Location
+                             }.SetRelativeAge(birthDate)));
+
+        // Load families when parent
+        await dbContext.Entry(person).Collection(x => x.Families).LoadAsync();
+        foreach (var familyMember in person.Families)
         {
-            var person = await dbContext.Persons.Where(x => x.Id == id).Include(x => x.Events).ThenInclude(x => x.Event).FirstOrDefaultAsync()
-                ?? throw PersonNotFoundException.Create(id);
-            DateModel? birthDate = person.Events
-                                         .Where(x => x.Event.Type == EventType.Födelse)
-                                         .Select(x => x.Date ?? x.Event.Date)
-                                         .FirstOrDefault();
+            List<Tuple<string, Uri>>? links = null;
 
-            items.AddRange(person.Events
-                                 .Select(x => new TimelineItem
-                                 {
-                                     EventId = x.EventId,
-                                     Name = x.Event.Name ?? x.Event.Type.ToString(),
-                                     Type = x.Event.Type,
-                                     Date = x.Date ?? x.Event.Date,
-                                     Location = x.Event.Location
-                                 }.SetRelativeAge(birthDate)));
-
-            // Load families when parent
-            await dbContext.Entry(person).Collection(x => x.Families).LoadAsync();
-            foreach (var familyMember in person.Families)
+            FamilyMember? partner = null;
+            if (familyMember is FamilyParentMember)
             {
-                List<Tuple<string, Uri>>? links = null;
+                await dbContext.Entry(familyMember)
+                               .Reference(x => x.Family)
+                               .Query()
+                               .Include(x => x.Events)
+                               .ThenInclude(x => x.Event)
+                               .LoadAsync();
+                var family = familyMember.Family;
 
-                FamilyMember? partner = null;
-                if (familyMember is FamilyParentMember)
+                if (family.Events.Count == 0)
                 {
-                    await dbContext.Entry(familyMember)
-                                   .Reference(x => x.Family)
-                                   .Query()
-                                   .Include(x => x.Events)
-                                   .ThenInclude(x => x.Event)
-                                   .LoadAsync();
-                    var family = familyMember.Family;
-
-                    if(family.Events.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    await dbContext.Entry(family).Collection(x => x.FamilyMembers).LoadAsync();
-                    partner = family.FamilyMembers
-                                    .Where(x => x.MemberType == FamilyMemberType.Parent)
-                                    .Where(x => x.PersonId != id)
-                                    .SingleOrDefault();
-                    if (partner is not null)
-                    {
-                        await dbContext.Entry(partner).Reference(x => x.Person).LoadAsync();
-                        var partnerName = new PersonName(partner.Person.Name);
-                        var partnerUrl = Url.Action(nameof(Person), new { id = partner.PersonId })! ?? throw new UnreachableException();
-                        links ??= [];
-                        links.Add(Tuple.Create(partnerName.DisplayName, new Uri(partnerUrl, UriKind.RelativeOrAbsolute)));
-                    }
-
-                    items.AddRange(family.Events
-                                         .Select(x => new TimelineItem
-                                         {
-                                             EventId = x.EventId,
-                                             Name = x.Event.Name ?? x.Event.Type.GetDisplayName(),
-                                             Type = x.Event.Type,
-                                             Date = x.Date ?? x.Event.Date,
-                                             Location = x.Event.Location,
-                                             Links = links
-                                         }.SetRelativeAge(birthDate)));
+                    continue;
                 }
-            }
 
-            return Ok(items.OrderBy(x=> x.Date));
+                await dbContext.Entry(family).Collection(x => x.FamilyMembers).LoadAsync();
+                partner = family.FamilyMembers
+                                .Where(x => x.MemberType == FamilyMemberType.Parent)
+                                .Where(x => x.PersonId != id)
+                                .SingleOrDefault();
+                if (partner is not null)
+                {
+                    await dbContext.Entry(partner).Reference(x => x.Person).LoadAsync();
+                    var partnerName = new PersonName(partner.Person.Name);
+                    var partnerUrl = Url.Action(nameof(Person), new { id = partner.PersonId })! ?? throw new UnreachableException();
+                    links ??= [];
+                    links.Add(Tuple.Create(partnerName.DisplayName, new Uri(partnerUrl, UriKind.RelativeOrAbsolute)));
+                }
+
+                items.AddRange(family.Events
+                                     .Select(x => new TimelineItem
+                                     {
+                                         EventId = x.EventId,
+                                         Name = x.Event.Name ?? x.Event.Type.GetDisplayName(),
+                                         Type = x.Event.Type,
+                                         Date = x.Date ?? x.Event.Date,
+                                         Location = x.Event.Location,
+                                         Links = links
+                                     }.SetRelativeAge(birthDate)));
+            }
         }
-        catch (NotFoundException)
+
+        items.Sort(new TimelineItemSorter());
+        return items;
+    }
+
+    private class TimelineItemSorter : IComparer<TimelineItem>
+    {
+        public int Compare(TimelineItem? x, TimelineItem? y)
         {
-            return NotFound();
+            if (x?.Date is null && y?.Date is null)
+                return 0;
+            if (x?.Date is null)
+                return -1;
+            if (y?.Date is null)
+                return 1;
+
+            var n = x.Date.CompareTo(y.Date);
+            if (n != 0)
+                return n;
+            return x.Name.CompareTo(y.Name);
         }
     }
 }

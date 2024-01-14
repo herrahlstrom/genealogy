@@ -1,4 +1,6 @@
-﻿namespace Genealogy.Web.Models.Person;
+﻿using Genealogy.Shared.Models;
+
+namespace Genealogy.Web.Models.Person;
 
 public class PersonViewModel
 {
@@ -7,5 +9,6 @@ public class PersonViewModel
     public string? Notes { get; init; }
     public required PersonSex Sex { get; init; }
     public string? Profession { get; init; }
-    public string? TimelineProviderUrl { get;init; }
+
+    public IReadOnlyList<TimelineItem>? TimelineItems { get; init; }
 }

@@ -1,5 +1,4 @@
-﻿@using Genealogy.Web.Components.Person
-@using System.Text
+﻿@using System.Text
 @using Genealogy.Domain.Entities
 @model PersonViewModel
 
@@ -21,7 +20,9 @@
 
 <div class="person-content">
 
-    <component type="typeof(TimelineComponent)" render-mode="WebAssembly"
-               param-TimelineProviderUrl="@Model.TimelineProviderUrl" />
+    @if (@Model.TimelineItems is { Count: > 0 } timelineItems)
+    {
+        <partial name="_Timeline" model="@timelineItems" />
+    }
 
 </div>

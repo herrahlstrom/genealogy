@@ -1,0 +1,48 @@
+﻿@using Genealogy.Shared.Models
+@model IReadOnlyList<TimelineItem>
+
+<ul class="timeline">
+    @foreach (TimelineItem eventItem in Model)
+    {
+        string eventCssClass = eventItem.Type switch
+        {
+            EventType.Boende => "event-small",
+            EventType.Flytt => "event-small",
+            _ => "event-regular"
+        };
+
+        <li class="event @(eventCssClass)">
+            <div class="bullet">
+                <div class="facts">
+                    <div class="factsDate">@eventItem.Date?.Year</div>
+                    @if (@eventItem.RelativeAge > 0)
+                    {
+                        <div class="factsAge">@eventItem.RelativeAge år</div>
+                    }
+                </div>
+            </div>
+            <div class="eventCard">
+                <div class="name">@eventItem.Name</div>
+                <ul class="meta">
+                    @if (eventItem.Date?.Date != null)
+                    {
+                        <li class="date">@eventItem.Date.GetDisplayDate()</li>
+                    }
+                    @if (eventItem.Location != null)
+                    {
+                        <li class="location">@eventItem.Location</li>
+                    }
+                </ul>
+                @if (eventItem.Links?.Count > 0)
+                {
+                    <ul class="links">
+                        @foreach (var linkItem in eventItem.Links)
+                        {
+                            <li class="link"><a href="@linkItem.Item2">@linkItem.Item1</a></li>
+                        }
+                    </ul>
+                }
+            </div>
+        </li>
+    }
+</ul>
