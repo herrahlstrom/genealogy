@@ -1,6 +1,4 @@
-﻿using Genealogy.Shared.Models;
-
-namespace Genealogy.Web.Models.Person;
+﻿namespace Genealogy.Web.Models.Person;
 
 public class PersonViewModel
 {

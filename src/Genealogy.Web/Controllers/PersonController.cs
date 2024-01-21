@@ -4,7 +4,6 @@ using Genealogy.Api.Auth;
 using Genealogy.Domain.Entities;
 using Genealogy.Infrastructure.Data;
 using Genealogy.Shared.Exceptions;
-using Genealogy.Shared.Models;
 using Genealogy.Web.Components.Search.Models;
 using Genealogy.Web.Models.Person;
 using Genealogy.Web.Utilities;
