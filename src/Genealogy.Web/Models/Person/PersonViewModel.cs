@@ -7,6 +7,7 @@ public class PersonViewModel
     public string? Notes { get; init; }
     public required PersonSex Sex { get; init; }
     public string? Profession { get; init; }
+    public PersonTree? Tree { get; init; }
 
     public IReadOnlyList<TimelineItem>? TimelineItems { get; init; }
 }

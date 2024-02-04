@@ -17,4 +17,93 @@
 .person-content {
     display: flex;
     margin-top: 1rem;
+    gap: 2rem;
+    align-items: start;
+    flex-wrap: wrap;
 }
+
+.tree {
+    display: grid;
+    grid-template-areas:
+        'farfar   farmor   morfar   mormor'
+        'far      far      mor      mor'
+        'self     self     self     self'
+        'family   family   family   family';
+    gap: 0.25rem;
+}
+
+@media (max-width: 992px) {
+    .tree {
+        flex: auto;
+    }
+}
+
+.tree .person {
+    border: solid 1px #ddd;
+    border-radius: 0.2rem;
+    background-color: #fff;
+    padding: 0.2rem 0.5rem;
+    display: grid;
+    line-height: 1;
+    grid-template-areas:
+        'relation'
+        'name';
+}
+
+    .tree .person .relation {
+        grid-area: relation;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .tree .person .name {
+        grid-area: name;
+        font-size: 1.1rem;
+    }
+
+.tree .far {
+    grid-area: far;
+}
+
+.tree .farfar {
+    grid-area: farfar;
+}
+
+.tree .farmor {
+    grid-area: farmor;
+}
+
+.tree .mor {
+    grid-area: mor;
+}
+
+.tree .morfar {
+    grid-area: morfar;
+}
+
+.tree .mormor {
+    grid-area: mormor;
+}
+
+.tree .self {
+    grid-area: self;
+    background-color: #efe;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.tree .partner-block {
+    grid-area: family;
+}
+
+    .tree .partner-block .person {
+        margin-bottom: 0.2rem;
+    }
+
+    .tree .partner-block .partner {
+    }
+
+    .tree .partner-block .child {
+        margin-left: 2rem;
+        margin-right: 1rem;
+    }

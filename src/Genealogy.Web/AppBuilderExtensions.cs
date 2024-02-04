@@ -12,7 +12,7 @@ internal static class AppBuilderExtensions
                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                .AddCookie(options =>
                {
-                   options.ExpireTimeSpan = TimeSpan.FromHours(1);
+                   options.ExpireTimeSpan = TimeSpan.FromDays(7);
                    options.SlidingExpiration = true;
                    //options.AccessDeniedPath = "/Forbidden/";
                    options.LoginPath = "/auth/login";

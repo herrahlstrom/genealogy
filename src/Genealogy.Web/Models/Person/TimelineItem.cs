@@ -7,7 +7,7 @@ public class TimelineItem
 {
     public DateModel? Date { get; init; }
     public required Guid EventId { get; init; }
-    public ICollection<Tuple<string, Uri>>? Links { get; set; }
+    public ICollection<ILink>? Links { get; set; }
     public string? Location { get; init; }
     public required string Name { get; set; }
     public int? RelativeAge { get; set; }

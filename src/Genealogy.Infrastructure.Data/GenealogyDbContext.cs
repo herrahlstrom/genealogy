@@ -13,6 +13,7 @@ public class GenealogyDbContext : DbContext
     }
     public GenealogyAuthDbSets Auth { get; }
     public DbSet<FamilyEntity> Families { get; set; }
+    public DbSet<FamilyMember> FamilyMembers { get; set; }
     public DbSet<PersonEntity> Persons { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

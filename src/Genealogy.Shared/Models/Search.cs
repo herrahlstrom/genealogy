@@ -17,5 +17,5 @@ public class SearchResultItem
     public required DateModel BirthDate { get; init; }
     public required Guid Id { get; init; }
     public required PersonName Name { get; init; }
-    public required string? Url { get; init; }
+    public required Uri? Url { get; init; }
 }

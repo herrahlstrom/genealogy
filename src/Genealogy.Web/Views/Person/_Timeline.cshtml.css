@@ -80,7 +80,7 @@
                 }
 
                     ul.timeline li.event .eventCard ul.meta li + li::before {
-                        content: '|';
+                        content: '·';
                         margin-right: 0.3rem;
                         margin-left: 0.3rem;
                     }
