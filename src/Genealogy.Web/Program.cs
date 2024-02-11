@@ -1,10 +1,8 @@
 using Genealogy.Api;
 using Genealogy.Infrastructure;
+using Microsoft.AspNetCore.Localization;
 using Serilog;
-
-//var loggerBuilder = new LoggerConfiguration();
-//loggerBuilder.WriteTo.Console();
-//loggerBuilder.WriteTo.Debug();
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args)
                             .AddAuth()
@@ -19,6 +17,14 @@ builder.Services.AddMemoryCache();
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
 
 var app = builder.Build();
+
+var defaultCulture = new CultureInfo("sv-SE");
+app.UseRequestLocalization(new RequestLocalizationOptions
+    {
+        DefaultRequestCulture = new RequestCulture(defaultCulture),
+        SupportedCultures = new List<CultureInfo> { defaultCulture, },
+        SupportedUICultures = new List<CultureInfo> { defaultCulture, }
+    });
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
