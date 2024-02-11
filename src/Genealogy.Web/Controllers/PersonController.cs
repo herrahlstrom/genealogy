@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using Genealogy.Api.Auth;
 using Genealogy.Domain.Entities;
 using Genealogy.Infrastructure.Data;
-using Genealogy.Shared;
 using Genealogy.Shared.Exceptions;
 using Genealogy.Web.Components.Search.Models;
 using Genealogy.Web.Models.Person;
@@ -47,29 +46,26 @@ public class PersonController : Controller
                          select new
                          {
                              x.Id,
-                             x.Name,
-                             BirthDate = (from e in x.Events
-                                          where e.Event.Type == EventType.Födelse
-                                          select e.Date ?? e.Event.Date).FirstOrDefault()
+                             x.Name
                          };
 
         var itemsData = await itemsQuery.ToListAsync();
 
         var items = new List<SearchResultItem>(itemsData.Count);
-        foreach (var item in itemsData.OrderByDescending(x => x.BirthDate))
+        foreach (var item in itemsData)
         {
             items.Add(new SearchResultItem
             {
                 Id = item.Id,
                 Name = new PersonName(item.Name),
-                BirthDate = new DateModel(item.BirthDate),
+                BirthDate = await GetBirthDate(item.Id),
                 Url = GetPersonUrl(item.Id)
             });
         }
 
         return Ok(new SearchResult
         {
-            Items = items
+            Items = items.OrderByDescending(x => x.BirthDate).ToList()
         });
     }
 
@@ -90,7 +86,12 @@ public class PersonController : Controller
                                 }).FirstOrDefaultAsync() ?? throw PersonNotFoundException.Create(id);
 
             var timelineItems = await GetTimelineItems(id);
-            var tree = await GetPersonTree(new TreePerson(person.Id, person.Name, person.Sex));
+            var tree = await GetPersonTree(new TreePerson(
+                Id: person.Id,
+                Name: person.Name,
+                Sex: person.Sex,
+                BirthDate: await GetBirthDate(person.Id),
+                DeathDate: await GetDeathDate(person.Id)));
 
             var model = new PersonViewModel
             {
@@ -111,6 +112,56 @@ public class PersonController : Controller
         }
     }
 
+    private async Task<DateModel> GetBirthDate(Guid personId)
+    {
+        const string cKey = "BirthDates";
+        var dictionary = await _cache.GetOrCreateAsync(cKey, BirthDateLoader) ?? throw new UnreachableException();
+
+        if (dictionary.TryGetValue(personId, out string? date))
+        {
+            return new DateModel(date);
+        }
+        return DateModel.Empty;
+
+        Task<Dictionary<Guid, string>> BirthDateLoader(ICacheEntry cacheEntry)
+        {
+            cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+            return (from p in _dbContext.Persons
+                    from pe in p.Events
+                    where pe.Event.Type == EventType.Födelse
+                    select new
+                    {
+                        PersonId = p.Id,
+                        Date = pe.Date ?? pe.Event.Date
+                    }).ToDictionaryAsync(x => x.PersonId, x => x.Date);
+        }
+    }
+
+    private async Task<DateModel> GetDeathDate(Guid personId)
+    {
+        const string cKey = "DeathDates";
+        var dictionary = await _cache.GetOrCreateAsync(cKey, DeathDateLoader) ?? throw new UnreachableException();
+
+        if (dictionary.TryGetValue(personId, out string? date))
+        {
+            return new DateModel(date);
+        }
+        return DateModel.Empty;
+
+        Task<Dictionary<Guid, string>> DeathDateLoader(ICacheEntry cacheEntry)
+        {
+            cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+            return (from p in _dbContext.Persons
+                    from pe in p.Events
+                    where pe.Event.Type == EventType.Död
+                    select new
+                    {
+                        PersonId = p.Id,
+                        Date = pe.Date ?? pe.Event.Date
+                    }).ToDictionaryAsync(x => x.PersonId, x => x.Date);
+        }
+    }
+
     private async Task<List<PersonTreeFamily>> GetFamilies(Guid id)
     {
         var familiesAsParent = await (from f in _dbContext.Families
@@ -124,24 +175,72 @@ public class PersonController : Controller
                               select new
                               {
                                   fm.FamilyId,
-                                  Partner = new TreePerson(fm.Person.Id, new PersonName(fm.Person.Name), fm.Person.Sex)
+                                  Partner = new { fm.Person.Id, fm.Person.Name, fm.Person.Sex },
                               }).ToDictionaryAsync(x => x.FamilyId, x => x.Partner);
 
         var children = await (from fm in _dbContext.FamilyMembers
                               where familiesAsParent.Contains(fm.FamilyId)
                               where fm.MemberType != FamilyMemberType.Parent
-                              let birth = fm.Person.Events.Where(x => x.Event.Type == EventType.Födelse).Select(x => x.Date ?? x.Event.Date).FirstOrDefault()
-                              orderby birth
                               select new
                               {
                                   fm.FamilyId,
-                                  Child = new TreePerson(fm.Person.Id, new PersonName(fm.Person.Name), fm.Person.Sex)
+                                  Child = new { fm.Person.Id, fm.Person.Name, fm.Person.Sex },
+                                  ChildType = fm.MemberType
                               }).ToListAsync();
 
-        return familiesAsParent.Select(familyId => new PersonTreeFamily(
-            partners.GetValueOrDefault(familyId),
-            children.Where(y => y.FamilyId == familyId).Select(y => y.Child).ToList()))
-                               .ToList();
+        List<PersonTreeFamily> result = [];
+        foreach (var familyId in familiesAsParent)
+        {
+            TreePerson? partner = null;
+            if (partners.TryGetValue(familyId, out var partnerData))
+            {
+                partner = new TreePerson(
+                    Id: partnerData.Id,
+                    Name: new PersonName(partnerData.Name),
+                    Sex: partnerData.Sex,
+                    BirthDate: await GetBirthDate(partnerData.Id),
+                    DeathDate: await GetDeathDate(partnerData.Id));
+            }
+
+            List<TreePerson> familyChildren = [];
+            List<TreePerson>? familyFosterChildren = null;
+            foreach (var child in children.Where(y => y.FamilyId == familyId))
+            {
+                var childTreePerson = new TreePerson(
+                    Id: child.Child.Id,
+                    Name: new PersonName(child.Child.Name),
+                    Sex: child.Child.Sex,
+                    BirthDate: await GetBirthDate(child.Child.Id),
+                    DeathDate: await GetDeathDate(child.Child.Id));
+
+                switch (child.ChildType)
+                {
+                    case FamilyMemberType.Child:
+                        familyChildren.Add(childTreePerson);
+                        break;
+
+                    case FamilyMemberType.FosterChild:
+                        familyFosterChildren ??= [];
+                        familyFosterChildren.Add(childTreePerson);
+                        break;
+
+                    default: throw new NotSupportedException($"Invalid type of children: '{child.ChildType}'");
+                }
+            }
+            familyChildren.Sort((a, b) => a.BirthDate.CompareTo(b.BirthDate));
+            familyFosterChildren?.Sort((a, b) => a.BirthDate.CompareTo(b.BirthDate));
+
+            result.Add(new PersonTreeFamily(partner, familyChildren, familyFosterChildren));
+        }
+
+        result.Sort((a, b) => (a.Children.Count > 0, b.Children.Count > 0) switch
+        {
+            (true, true) => a.Children.First().BirthDate.CompareTo(b.Children.First().BirthDate),
+            (true, false) => -1,
+            (false, true) => 1,
+            (false, false) => 0,
+        });
+        return result;
     }
 
     private async Task<Guid?> GetParentId(Guid id, PersonSex sex)
@@ -164,10 +263,14 @@ public class PersonController : Controller
     private async Task<ParentPersonTreeNode> GetParentPersonTreeNode(Guid id, int withGrandParentsLevels)
     {
         string cKey = $"ParentPersonTreeNode_{id:N}";
-        var p = await _cache.GetOrCreateAsync(cKey, async entry => await _dbContext.Persons
-                                                                                   .Where(x => x.Id == id)
-                                                                                   .Select(x => new { x.Name, x.Sex })
-                                                                                   .SingleAsync()) ?? throw new UnreachableException();
+        var p = await _cache.GetOrCreateAsync(cKey, async entry =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15);
+                    return await _dbContext.Persons
+                                           .Where(x => x.Id == id)
+                                           .Select(x => new { x.Name, x.Sex })
+                                           .SingleAsync();
+                }) ?? throw new UnreachableException();
 
         ParentPersonTreeNode? grandFather = null;
         ParentPersonTreeNode? grandMother = null;
@@ -187,7 +290,7 @@ public class PersonController : Controller
             }
         }
 
-        return new ParentPersonTreeNode(id, new PersonName(p.Name), p.Sex, grandFather, grandMother);
+        return new ParentPersonTreeNode(id, new PersonName(p.Name), p.Sex, grandFather, grandMother, await GetBirthDate(id), await GetDeathDate(id));
     }
 
     private async Task<PersonTree> GetPersonTree(TreePerson self)
@@ -214,10 +317,7 @@ public class PersonController : Controller
     {
         var person = await _dbContext.Persons.Where(x => x.Id == id).Include(x => x.Events).ThenInclude(x => x.Event).FirstOrDefaultAsync()
                 ?? throw PersonNotFoundException.Create(id);
-        DateModel? birthDate = person.Events
-                                     .Where(x => x.Event.Type == EventType.Födelse)
-                                     .Select(x => x.Date ?? x.Event.Date)
-                                     .FirstOrDefault();
+        DateModel birthDate = await GetBirthDate(person.Id);
 
         List<TimelineItem> items = [];
 

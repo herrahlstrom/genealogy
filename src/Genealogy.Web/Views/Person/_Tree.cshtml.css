@@ -1,0 +1,30 @@
+﻿/*
+    *   born
+    †   died
+    ♀︎   female
+    ♂︎   male
+    ⚬   engaged
+    ⚭   married
+    ⚮   divorced
+*/
+
+
+.tree {
+    display: grid;
+    grid-template-areas:
+        'farfar   farmor   morfar   mormor'
+        'far      far      mor      mor'
+        'self     self     self     self'
+        'family   family   family   family';
+    gap: 0.25rem;
+}
+
+@media (max-width: 992px) {
+    .tree {
+        flex: auto;
+    }
+}
+
+.tree .partner-block {
+    grid-area: family;
+}

@@ -1,0 +1,21 @@
+﻿@model TreePerson
+
+@if (Model is null)
+{
+    <div class="person @ViewData["relCss"]">
+        <div class="relation">@ViewData["relDisplay"]</div>
+        <div class="name"> - </div>
+    </div>
+}
+else
+{
+    <div class="person @ViewData["relCss"] @Model.Sex.ToString().ToLower()">
+        <div class="relation">@ViewData["relDisplay"]</div>
+        <div class="birth">@Model.BirthDate.DisplayDate</div>
+        @if (Model.DeathDate.HasValue)
+        {
+            <div class="death">@Model.DeathDate.DisplayDate</div>
+        }
+        <div class="name"><a asp-action="Person" asp-route-id="@Model.Id">@Model.Name.DisplayName</a></div>
+    </div>
+}

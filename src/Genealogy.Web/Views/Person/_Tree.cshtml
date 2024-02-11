@@ -1,0 +1,43 @@
+﻿@model PersonTree
+
+<div class="tree">
+
+    @if (Model.Father is { } far)
+    {
+        <partial name="_TreePerson" model="@(far.Father as TreePerson)" view-data="@(ViewData)" view-data-relCss='@("farfar")' view-data-relDisplay='@("Farfar")' />
+        <partial name="_TreePerson" model="@(far.Mother as TreePerson)" view-data="@(ViewData)" view-data-relCss='@("farmor")' view-data-relDisplay='@("Farmor")' />
+    }
+    <partial name="_TreePerson" model="@(Model.Father as TreePerson)" view-data="@(ViewData)" view-data-relCss='@("far")' view-data-relDisplay='@("Far")' />
+
+    @if (Model.Mother is { } mor)
+    {
+        <partial name="_TreePerson" model="@(mor.Father as TreePerson)" view-data="@(ViewData)" view-data-relCss='@("morfar")' view-data-relDisplay='@("Morfar")' />
+        <partial name="_TreePerson" model="@(mor.Mother as TreePerson)" view-data="@(ViewData)" view-data-relCss='@("mormor")' view-data-relDisplay='@("Mormor")' />
+    }
+    <partial name="_TreePerson" model="@(Model.Mother as TreePerson)" view-data="@(ViewData)" view-data-relCss='@("mor")' view-data-relDisplay='@("Mor")' />
+
+    <partial name="_TreePerson" model="Model.Self" view-data="@(ViewData)" view-data-relCss='@("self")' />
+
+
+    @if (Model.Families is { Count: > 0 } families)
+    {
+        <div class="partner-block">
+            @foreach (var family in families)
+            {
+                <partial name="_TreePerson" model="@(family.Partner as TreePerson)" view-data="@(ViewData)" view-data-relCss='@("partner")' view-data-relDisplay='@("Partner")' />
+
+                @foreach (var child in family.Children)
+                {
+                    <partial name="_TreePerson" model="child" view-data="@(ViewData)" view-data-relCss='@("child")' view-data-relDisplay='@(child.Sex == PersonSex.Male ? "Son" : "Dotter")' />
+                }
+                @if (family.FosterChildren != null)
+                {
+                    @foreach (var child in family.FosterChildren)
+                    {
+                        <partial name="_TreePerson" model="child" view-data="@(ViewData)" view-data-relCss='@("child fosterchild")' view-data-relDisplay='@(child.Sex == PersonSex.Male ? "Fosterson" : "Fosterdotter")' />
+                    }
+                }
+            }
+        </div>
+    }
+</div>

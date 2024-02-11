@@ -11,6 +11,7 @@ public class PersonTree
     public ICollection<PersonTreeFamily>? Families { get; set; }
 }
 
-public record TreePerson(Guid Id, PersonName Name, PersonSex Sex);
-public record PersonTreeFamily(TreePerson? Partner, ICollection<TreePerson> Children);
-public record ParentPersonTreeNode(Guid Id, PersonName Name, PersonSex Sex, ParentPersonTreeNode? Father, ParentPersonTreeNode? Mother) : TreePerson(Id, Name, Sex);
+public record TreePerson(Guid Id, PersonName Name, PersonSex Sex, DateModel BirthDate, DateModel DeathDate);
+public record PersonTreeFamily(TreePerson? Partner, ICollection<TreePerson> Children, ICollection<TreePerson>? FosterChildren = null);
+public record ParentPersonTreeNode(Guid Id, PersonName Name, PersonSex Sex, ParentPersonTreeNode? Father, ParentPersonTreeNode? Mother, DateModel BirthDate, DateModel DeathDate)
+    : TreePerson(Id, Name, Sex, BirthDate, DeathDate);

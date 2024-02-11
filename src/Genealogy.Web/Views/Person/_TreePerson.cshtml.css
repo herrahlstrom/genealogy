@@ -1,0 +1,109 @@
+﻿.tree .person {
+    border: solid 1px #ddd;
+    border-radius: 0.2rem;
+    background-color: #fff;
+    padding: 0.2rem 0.5rem;
+    display: grid;
+    line-height: 1;
+    grid-column-gap: 0.5rem;
+    grid-template-areas:
+        'relation birth'
+        'name name'
+        '- death';
+    grid-template-columns: auto max-content;
+}
+
+    .tree .person.self {
+        grid-template-areas:
+            'name birth'
+            '- death';
+        grid-template-columns: auto max-content;
+    }
+
+        .tree .person.self .relation {
+            display: none;
+        }
+
+@media (max-width: 768px) {
+    .tree .person {
+        display: block;
+    }
+}
+
+.tree .person.far {
+    grid-area: far;
+}
+
+.tree .person.farfar {
+    grid-area: farfar;
+}
+
+.tree .person.farmor {
+    grid-area: farmor;
+}
+
+.tree .person.mor {
+    grid-area: mor;
+}
+
+.tree .person.morfar {
+    grid-area: morfar;
+}
+
+.tree .person.mormor {
+    grid-area: mormor;
+}
+
+.tree .person.self {
+    grid-area: self;
+    background-color: #efe;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+}
+
+
+.tree .person .relation {
+    grid-area: relation;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.tree .person .birth {
+    grid-area: birth;
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-align: right;
+}
+
+.tree .person .death {
+    grid-area: death;
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-align: right;
+}
+
+    .tree .person .death::before {
+        content: '†';
+        margin-right: 0.2rem;
+    }
+
+.tree .person .name {
+    grid-area: name;
+    font-size: 1.1rem;
+    word-wrap: anywhere
+}
+
+.tree .partner-block .person {
+    margin-bottom: 0.2rem;
+}
+
+.tree .partner-block .partner {
+}
+
+.tree .partner-block .child {
+    margin-left: 2rem;
+}
+
+.tree .partner-block .person.child.fosterchild {
+    opacity: 0.8;
+}
