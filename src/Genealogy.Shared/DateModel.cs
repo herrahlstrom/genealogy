@@ -5,10 +5,12 @@ using System.Text.RegularExpressions;
 
 namespace Genealogy.Shared;
 
-public partial class DateModel : IEquatable<DateModel>, IComparable<DateModel>
+public partial struct DateModel : IEquatable<DateModel>, IComparable<DateModel>
 {
     private readonly Lazy<DateOnly?> _lazyDate;
     private readonly Lazy<int?> _lazyYear;
+
+    private static DateModel _emptyInstance = new("");
 
     public DateModel(string? value)
     {
@@ -17,9 +19,55 @@ public partial class DateModel : IEquatable<DateModel>, IComparable<DateModel>
         _lazyDate = new Lazy<DateOnly?>(GetDate);
     }
 
-    public DateOnly? Date => _lazyDate.Value;
+    public static DateModel Empty
+    {
+        get => _emptyInstance;
+    }
 
-    public string GetDisplayDate()
+    public readonly DateOnly? Date => _lazyDate.Value;
+
+    public readonly string DisplayDate => GetDisplayDate();
+    public readonly bool HasValue => Value is { Length: > 0 };
+    public string Value { get; }
+    public readonly int? Year => _lazyYear.Value;
+
+    public static implicit operator DateModel(string? str)
+    {
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            return new DateModel("");
+        }
+        return new DateModel(str);
+    }
+
+    public readonly int CompareTo(DateModel other)
+    {
+        if (Date.HasValue && other.Date.HasValue)
+        {
+            return Date.Value.CompareTo(other.Date.Value);
+        }
+
+        if (Year.HasValue && other.Year.HasValue)
+        {
+            return Year.Value.CompareTo(other.Year.Value);
+        }
+
+        return Value.CompareTo(other.Value);
+    }
+    public readonly bool Equals(DateModel other)
+    {
+        return other.Value == Value;
+    }
+
+    public override readonly bool Equals(object? obj)
+    {
+        if (obj is DateModel)
+        {
+            return Equals((DateModel)obj);
+        }
+        return false;
+    }
+    public readonly string GetDisplayDate()
     {
         if (Date is { } d)
         {
@@ -32,36 +80,14 @@ public partial class DateModel : IEquatable<DateModel>, IComparable<DateModel>
         return Value;
     }
 
-    public bool HasValue => Value is { Length: > 0 };
-    public string Value { get; }
-    public int? Year => _lazyYear.Value;
-
-    public static implicit operator DateModel(string? str)
-    {
-        if (string.IsNullOrWhiteSpace(str))
-        {
-            return new DateModel("");
-        }
-        return new DateModel(str);
-    }
-
-    public override string ToString()
-    {
-        return Value;
-    }
-    public bool Equals(DateModel? other)
-    {
-        return other != null && other.Value == Value;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as DateModel);
-    }
-
-    public override int GetHashCode()
+    public override readonly int GetHashCode()
     {
         return Value.GetHashCode();
+    }
+
+    public override readonly string ToString()
+    {
+        return Value;
     }
 
     [GeneratedRegex(@"^(?<year>\d{4})\-(?<month>\d{2})\-(?<day>\d{2})$")]
@@ -70,7 +96,7 @@ public partial class DateModel : IEquatable<DateModel>, IComparable<DateModel>
     [GeneratedRegex(@"^(?<year>\d{4})(\D|$)")]
     private static partial Regex YearRegex();
 
-    private DateOnly? GetDate()
+    private readonly DateOnly? GetDate()
     {
         if (ExactDateRegex().Match(Value) is { Success: true } m)
         {
@@ -82,30 +108,12 @@ public partial class DateModel : IEquatable<DateModel>, IComparable<DateModel>
         return null;
     }
 
-    private int? GetYear()
+    private readonly int? GetYear()
     {
         if (YearRegex().Match(Value) is { Success: true } m)
         {
             return int.Parse(m.Groups["year"].Value);
         }
         return null;
-    }
-
-    public int CompareTo(DateModel? other)
-    {
-        if (other is null)
-            return -1;
-
-        if (Date.HasValue && other.Date.HasValue)
-        {
-            return Date.Value.CompareTo(other.Date.Value);
-        }
-
-        if (Year.HasValue && other.Year.HasValue)
-        {
-            return Year.Value.CompareTo(other.Year.Value);
-        }
-
-        return Value.CompareTo(other.Value);
     }
 }

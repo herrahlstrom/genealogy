@@ -13,7 +13,7 @@
         <li class="event @(eventCssClass)">
             <div class="bullet">
                 <div class="facts">
-                    <div class="factsDate">@eventItem.Date?.Year</div>
+                    <div class="factsDate">@eventItem.Date.Year</div>
                     @if (@eventItem.RelativeAge > 0)
                     {
                         <div class="factsAge">@eventItem.RelativeAge år</div>
@@ -23,7 +23,7 @@
             <div class="eventCard">
                 <div class="name">@eventItem.Name</div>
                 <ul class="meta">
-                    @if (eventItem.Date?.Date != null)
+                    @if (eventItem.Date.Date != null)
                     {
                         <li class="date">@eventItem.Date.GetDisplayDate()</li>
                     }

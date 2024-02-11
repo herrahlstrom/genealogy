@@ -5,7 +5,7 @@ namespace Genealogy.Web.Models.Person;
 
 public class TimelineItem
 {
-    public DateModel? Date { get; init; }
+    public DateModel Date { get; init; }
     public required Guid EventId { get; init; }
     public ICollection<ILink>? Links { get; set; }
     public string? Location { get; init; }
@@ -13,13 +13,13 @@ public class TimelineItem
     public int? RelativeAge { get; set; }
     public required EventType Type { get; init; }
 
-    public TimelineItem SetRelativeAge(DateModel? birthDate)
+    public TimelineItem SetRelativeAge(DateModel birthDate)
     {
         RelativeAge = GetRelativeAge(birthDate);
         return this;
     }
 
-    private int? GetRelativeAge(DateModel? birthDate)
+    private int? GetRelativeAge(DateModel birthDate)
     {
         if (GetDateTime(birthDate) is { } a && GetDateTime(this.Date) is { } b)
             return b.DayOfYear >= a.DayOfYear
