@@ -1,4 +1,6 @@
-﻿namespace Genealogy.Web.Models.Person;
+﻿using Genealogy.Web.Models.Media;
+
+namespace Genealogy.Web.Models.Person;
 
 public class PersonViewModel
 {
@@ -10,4 +12,5 @@ public class PersonViewModel
     public PersonTree? Tree { get; init; }
 
     public IReadOnlyList<TimelineItem>? TimelineItems { get; init; }
+    public required IReadOnlyCollection<MediaViewModel> Media { get; set; }
 }

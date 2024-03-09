@@ -4,15 +4,21 @@ using Microsoft.AspNetCore.Localization;
 using Serilog;
 using System.Globalization;
 
-var builder = WebApplication.CreateBuilder(args)
-                            .AddAuth()
-                            .AddInfrastructure();
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddGenealogyOptions(builder.Configuration);
+builder.Services.AddMemoryCache();
+builder.Services.AddServices();
+builder.Services.AddAuth();
 
 builder.Services
-       .AddControllersWithViews()
-       .AddJsonOptions(options => options.JsonSerializerOptions.SetGenealogyDefault().AddGenealogyConverters());
+  .AddControllersWithViews()
+  .AddJsonOptions(options => options.JsonSerializerOptions.SetGenealogyDefault().AddGenealogyConverters());
+
 builder.Services.AddRazorPages();
-builder.Services.AddMemoryCache();
+
+
+builder.AddInfrastructure();
 
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
 
@@ -20,11 +26,11 @@ var app = builder.Build();
 
 var defaultCulture = new CultureInfo("sv-SE");
 app.UseRequestLocalization(new RequestLocalizationOptions
-    {
-        DefaultRequestCulture = new RequestCulture(defaultCulture),
-        SupportedCultures = new List<CultureInfo> { defaultCulture, },
-        SupportedUICultures = new List<CultureInfo> { defaultCulture, }
-    });
+{
+    DefaultRequestCulture = new RequestCulture(defaultCulture),
+    SupportedCultures = new List<CultureInfo> { defaultCulture, },
+    SupportedUICultures = new List<CultureInfo> { defaultCulture, }
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

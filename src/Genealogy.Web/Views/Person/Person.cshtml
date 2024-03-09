@@ -31,4 +31,9 @@
         <partial name="_Tree" model="@tree" />
     }
 
+    @if (@Model.Media is { Count: > 0 } mediaItems)
+    {
+        <partial name="_Media" model="@mediaItems" />
+    }
+
 </div>

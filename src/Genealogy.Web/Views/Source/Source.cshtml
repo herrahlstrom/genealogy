@@ -1,0 +1,61 @@
+﻿@using Genealogy.Web.Models.Sources
+@model SourceViewModel
+
+<div class="source">
+
+    <dl class="source-info">
+        <dt>Id</dt>
+        <dd>@Model.Id</dd>
+
+        <dt>Name</dt>
+        <dd>@Model.Name</dd>
+
+        @if (@Model.Repository is { Length: > 0 })
+        {
+            <dt>Repository</dt>
+            <dd>@Model.Repository</dd>
+        }
+
+        @if (@Model.Volume is { Length: > 0 })
+        {
+            <dt>Volume</dt>
+            <dd>@Model.Volume</dd>
+        }
+
+        @if (@Model.Page is { Length: > 0 })
+        {
+            <dt>Page</dt>
+            <dd>@Model.Page</dd>
+        }
+
+        @if (@Model.Url is { Length: > 0 })
+        {
+            <dt>Url</dt>
+            <dd><a href="@Model.Url">@Model.Url</a></dd>
+        }
+
+        @if (@Model.ReferenceId is { Length: > 0 })
+        {
+            <dt>ReferenceId</dt>
+            <dd>@Model.ReferenceId</dd>
+        }
+
+        @if (@Model.Notes is { Length: > 0 })
+        {
+            <dt>Notes</dt>
+            <dd>@Model.Notes</dd>
+        }
+    </dl>
+
+    <div class="media-items">
+        @foreach (var media in @Model.Media)
+        {
+            <div class="media-item">
+                <div class="title">@media.Title</div>
+                <partial name="_ModalImage" model="@(new ModalImageViewModel(@media.Title, @media.Url, @media.Url))" />
+                <div class="notes">@media.Notes</div>
+            </div>
+
+        }
+    </div>
+</div>

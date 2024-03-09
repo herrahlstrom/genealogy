@@ -11,10 +11,14 @@ public class GenealogyDbContext : DbContext
     {
         Auth = new GenealogyAuthDbSets(this);
     }
+
     public GenealogyAuthDbSets Auth { get; }
+    public DbSet<EventEntity> Events { get; set; }
     public DbSet<FamilyEntity> Families { get; set; }
     public DbSet<FamilyMember> FamilyMembers { get; set; }
     public DbSet<PersonEntity> Persons { get; set; }
+    public DbSet<SourceEntity> Sources { get; set; }
+    public DbSet<MediaEntity> Media { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

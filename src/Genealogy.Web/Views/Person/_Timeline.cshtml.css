@@ -88,6 +88,7 @@
             ul.timeline li.event .eventCard ul.links {
                 list-style: none;
                 padding-left: 0;
+                flex: 0 0 100%;
             }
 
                 ul.timeline li.event .eventCard ul.links li.link {
@@ -99,12 +100,26 @@
 
     ul.timeline li.event.event-small .eventCard {
         display: flex;
-        gap: 1rem;
+        flex-wrap: wrap;
+        gap: 0 1rem;
     }
 
         ul.timeline li.event.event-small .eventCard .meta .date {
             display: none;
         }
+
+        ul.timeline li.event.event-small .eventCard ul.links {
+            flex: none;
+        }
+
+            ul.timeline li.event.event-small .eventCard ul.links li.link a {
+                font-size: 0;
+            }
+
+                ul.timeline li.event.event-small .eventCard ul.links li.link a:after {
+                    content: '↗';
+                    font-size: 0.9rem;
+                }
 
     ul.timeline li.event.event-small .bullet .facts .factsAge {
         display: none;

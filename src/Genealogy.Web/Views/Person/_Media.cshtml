@@ -1,0 +1,12 @@
+﻿@using Genealogy.Web.Models.Media
+@model IReadOnlyList<MediaViewModel>
+
+<div class="media-items">
+    @foreach (var media in @Model)
+    {
+        <div class="media-item">
+            <partial name="_ModalImage" model="@(new ModalImageViewModel(@media.Title, @media.Url, @media.Url))" />
+        </div>
+
+    }
+</div>

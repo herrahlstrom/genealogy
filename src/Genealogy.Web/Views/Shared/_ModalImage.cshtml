@@ -1,0 +1,17 @@
+﻿@model ModalImageViewModel
+
+<img src="@Model.ThumbnailPath" class="thumbnail" onclick="this.nextElementSibling.style.display='block'" alt="@Model.Caption" title="@Model.Caption" />
+
+<!-- The Modal -->
+<div class="modal">
+
+    <!-- The Close Button -->
+    <span class="close" onclick="this.closest('.modal').style.display='none'">&times;</span>
+
+    <!-- Modal Caption (Image Text) -->
+    <div class="caption">@Model.Caption</div>
+
+    <!-- Modal Content (The Image) -->
+    <img class="modal-content" src="@Model.FullPath" alt="@Model.Caption">
+
+</div>

@@ -1,28 +1,26 @@
 ﻿using System.Diagnostics;
-using System.Linq;
-using System.Linq.Expressions;
 using Genealogy.Api.Auth;
 using Genealogy.Domain.Entities;
 using Genealogy.Infrastructure.Data;
 using Genealogy.Shared.Exceptions;
 using Genealogy.Web.Components.Search.Models;
+using Genealogy.Web.Models.Media;
 using Genealogy.Web.Models.Person;
 using Genealogy.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 
-namespace Genealogy.Api.Controllers;
+namespace Genealogy.Web.Controllers;
 
 [Route("persons")]
 [Authorize(Policies.CanRead)]
 public class PersonController : Controller
 {
-    private readonly IMemoryCache _cache;
+    private readonly ICacheControl _cache;
     private readonly GenealogyDbContext _dbContext;
 
-    public PersonController(GenealogyDbContext dbContext, IMemoryCache cache)
+    public PersonController(GenealogyDbContext dbContext, ICacheControl cache)
     {
         _cache = cache;
         _dbContext = dbContext;
@@ -82,7 +80,8 @@ public class PersonController : Controller
                                     Name = new PersonName(p.Name),
                                     p.Sex,
                                     p.Profession,
-                                    p.Notes
+                                    p.Notes,
+                                    Media = p.Media.OrderBy(x=> x.Title).Select(x => new { x.Id, x.Title, x.Path, x.Notes}).ToList()
                                 }).FirstOrDefaultAsync() ?? throw PersonNotFoundException.Create(id);
 
             var timelineItems = await GetTimelineItems(id);
@@ -101,7 +100,14 @@ public class PersonController : Controller
                 Profession = person.Profession,
                 Notes = person.Notes,
                 TimelineItems = timelineItems,
-                Tree = tree
+                Tree = tree,
+                Media = person.Media.Select(m => new MediaViewModel
+                {
+                    Id = m.Id,
+                    Title = m.Title ?? "",
+                    Url = Url.Action(controller: "Media", action: "Media", values: new { m.Id, filename = m.Title }) ?? throw new UnreachableException(),
+                    Notes = m.Notes ?? ""
+                }).ToList(),
             };
 
             return View(model);
@@ -114,52 +120,44 @@ public class PersonController : Controller
 
     private async Task<DateModel> GetBirthDate(Guid personId)
     {
-        const string cKey = "BirthDates";
-        var dictionary = await _cache.GetOrCreateAsync(cKey, BirthDateLoader) ?? throw new UnreachableException();
+        var dictionary = await _cache.GetOrCreateAsync(
+            key: new BirthDateCacheKey(),
+            cacheLifetime: TimeSpan.FromMinutes(30),
+            valueFactory: ct => (from p in _dbContext.Persons
+                                 from pe in p.Events
+                                 where pe.Event.Type == EventType.Födelse
+                                 select new
+                                 {
+                                     PersonId = p.Id,
+                                     Date = pe.Date ?? pe.Event.Date
+                                 }).ToDictionaryAsync(x => x.PersonId, x => x.Date, cancellationToken: ct));
 
         if (dictionary.TryGetValue(personId, out string? date))
         {
             return new DateModel(date);
         }
         return DateModel.Empty;
-
-        Task<Dictionary<Guid, string>> BirthDateLoader(ICacheEntry cacheEntry)
-        {
-            cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
-            return (from p in _dbContext.Persons
-                    from pe in p.Events
-                    where pe.Event.Type == EventType.Födelse
-                    select new
-                    {
-                        PersonId = p.Id,
-                        Date = pe.Date ?? pe.Event.Date
-                    }).ToDictionaryAsync(x => x.PersonId, x => x.Date);
-        }
     }
 
     private async Task<DateModel> GetDeathDate(Guid personId)
     {
-        const string cKey = "DeathDates";
-        var dictionary = await _cache.GetOrCreateAsync(cKey, DeathDateLoader) ?? throw new UnreachableException();
+        var dictionary = await _cache.GetOrCreateAsync(
+            key: new DeathDatesCacheKey(),
+            cacheLifetime: TimeSpan.FromMinutes(30),
+            valueFactory: ct => (from p in _dbContext.Persons
+                                 from pe in p.Events
+                                 where pe.Event.Type == EventType.Död
+                                 select new
+                                 {
+                                     PersonId = p.Id,
+                                     Date = pe.Date ?? pe.Event.Date
+                                 }).ToDictionaryAsync(x => x.PersonId, x => x.Date, cancellationToken: ct));
 
         if (dictionary.TryGetValue(personId, out string? date))
         {
             return new DateModel(date);
         }
         return DateModel.Empty;
-
-        Task<Dictionary<Guid, string>> DeathDateLoader(ICacheEntry cacheEntry)
-        {
-            cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
-            return (from p in _dbContext.Persons
-                    from pe in p.Events
-                    where pe.Event.Type == EventType.Död
-                    select new
-                    {
-                        PersonId = p.Id,
-                        Date = pe.Date ?? pe.Event.Date
-                    }).ToDictionaryAsync(x => x.PersonId, x => x.Date);
-        }
     }
 
     private async Task<List<PersonTreeFamily>> GetFamilies(Guid id)
@@ -245,32 +243,26 @@ public class PersonController : Controller
 
     private async Task<Guid?> GetParentId(Guid id, PersonSex sex)
     {
-        string key = $"GetParentId_{id:N}_{sex}";
-        if (_cache.TryGetValue(key, out Guid? cachedValue))
-        {
-            return cachedValue;
-        }
-
-        Guid? parentId = await (from member in _dbContext.FamilyMembers
-                                where member.MemberType == FamilyMemberType.Parent
-                                where member.Person.Sex == sex
-                                where member.Family.FamilyMembers.Any(x => x.PersonId == id && x.MemberType == FamilyMemberType.Child)
-                                select (Guid?)member.PersonId).SingleOrDefaultAsync();
-        _cache.Set(key, parentId);
+        var parentId = await _cache.GetOrCreateAsync(
+            new GetParentCacheKey(id, sex),
+            cacheLifetime: TimeSpan.FromMinutes(30),
+            valueFactory: ct => (from member in _dbContext.FamilyMembers
+                                 where member.MemberType == FamilyMemberType.Parent
+                                 where member.Person.Sex == sex
+                                 where member.Family.FamilyMembers.Any(x => x.PersonId == id && x.MemberType == FamilyMemberType.Child)
+                                 select member.PersonId).SingleOrDefaultAsync());
+        if (parentId == Guid.Empty)
+            return null;
         return parentId;
     }
 
     private async Task<ParentPersonTreeNode> GetParentPersonTreeNode(Guid id, int withGrandParentsLevels)
     {
-        string cKey = $"ParentPersonTreeNode_{id:N}";
-        var p = await _cache.GetOrCreateAsync(cKey, async entry =>
-                {
-                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15);
-                    return await _dbContext.Persons
-                                           .Where(x => x.Id == id)
-                                           .Select(x => new { x.Name, x.Sex })
-                                           .SingleAsync();
-                }) ?? throw new UnreachableException();
+        var p = await _cache.GetOrCreateAsync(new ParentPersonTreeNodeCacheKey(id),
+        cacheLifetime: TimeSpan.FromMinutes(15),
+        valueFactory: ct => (from person in _dbContext.Persons
+                             where person.Id == id
+                             select new { person.Name, person.Sex }).SingleAsync(ct));
 
         ParentPersonTreeNode? grandFather = null;
         ParentPersonTreeNode? grandMother = null;
@@ -312,31 +304,57 @@ public class PersonController : Controller
         var pathToAction = Url.Action<PersonController>(nameof(Person), new { id }) ?? throw new UnreachableException();
         return new Uri(pathToAction, UriKind.RelativeOrAbsolute);
     }
+    private Uri GetSourceUrl(Guid id)
+    {
+        var pathToAction = Url.Action<SourceController>(nameof(SourceController.Source), new { id }) ?? throw new UnreachableException();
+        return new Uri(pathToAction, UriKind.RelativeOrAbsolute);
+    }
+    private Uri GetEventUrl(Guid id)
+    {
+        var pathToAction = Url.Action<EventController>(nameof(EventController.Event), new { id }) ?? throw new UnreachableException();
+        return new Uri(pathToAction, UriKind.RelativeOrAbsolute);
+    }
 
     private async Task<List<TimelineItem>> GetTimelineItems(Guid id)
     {
-        var person = await _dbContext.Persons.Where(x => x.Id == id).Include(x => x.Events).ThenInclude(x => x.Event).FirstOrDefaultAsync()
+        var q = _dbContext.Persons
+                          .Where(x => x.Id == id)
+                          .Include(x => x.Events)
+                          .ThenInclude(x => x.Event)
+                          .ThenInclude(x => x.Sources);
+
+        var sql = q.ToQueryString();
+
+        var person = await q
+                                     .FirstOrDefaultAsync()
                 ?? throw PersonNotFoundException.Create(id);
         DateModel birthDate = await GetBirthDate(person.Id);
 
         List<TimelineItem> items = [];
 
-        items.AddRange(person.Events
-                             .Select(x => new TimelineItem
-                             {
-                                 EventId = x.EventId,
-                                 Name = x.Event.Name ?? x.Event.Type.ToString(),
-                                 Type = x.Event.Type,
-                                 Date = x.Date ?? x.Event.Date,
-                                 Location = x.Event.Location
-                             }.SetRelativeAge(birthDate)));
+        foreach (var pEvent in person.Events)
+        {
+            List<ILink> links = [.. pEvent.Event.Sources.Select(x => new SourceReference(x.Name, GetSourceUrl(x.Id)))];
+
+            var item = new TimelineItem
+            {
+                EventId = pEvent.EventId,
+                Name = pEvent.Event.Name ?? pEvent.Event.Type.ToString(),
+                Type = pEvent.Event.Type,
+                Date = pEvent.Date ?? pEvent.Event.Date,
+                Location = pEvent.Event.Location,
+                Links = links
+            }.SetRelativeAge(birthDate);
+            items.Add(item);
+        }
+
 
         // Load families when parent
         await _dbContext.Entry(person).Collection(x => x.Families).LoadAsync();
         foreach (var familyMember in person.Families.OfType<FamilyParentMember>())
         {
             // Load family with the events
-            await _dbContext.Entry(familyMember).Reference(x => x.Family).Query().Include(x => x.Events).ThenInclude(x => x.Event).LoadAsync();
+            await _dbContext.Entry(familyMember).Reference(x => x.Family).Query().Include(x => x.Events).ThenInclude(x => x.Event).ThenInclude(x => x.Sources).LoadAsync();
             var family = familyMember.Family;
 
             if (family.Events.Count == 0)
@@ -344,7 +362,7 @@ public class PersonController : Controller
                 continue;
             }
 
-            List<ILink>? links = null;
+            List<ILink> familyLinks = new();
 
             // Load all family members to get an eventual partner
             await _dbContext.Entry(family).Collection(x => x.FamilyMembers).LoadAsync();
@@ -354,22 +372,27 @@ public class PersonController : Controller
             {
                 // Load partner to get name
                 await _dbContext.Entry(partner).Reference(x => x.Person).LoadAsync();
-                links ??= [];
-                links.Add(new PersonReference(
+                familyLinks.Add(new PersonReference(
                     Name: new PersonName(partner.Person.Name),
                     Url: GetPersonUrl(partner.PersonId)));
             }
 
-            items.AddRange(family.Events
-                                 .Select(x => new TimelineItem
-                                 {
-                                     EventId = x.EventId,
-                                     Name = x.Event.Name ?? x.Event.Type.GetDisplayName(),
-                                     Type = x.Event.Type,
-                                     Date = x.Date ?? x.Event.Date,
-                                     Location = x.Event.Location,
-                                     Links = links
-                                 }.SetRelativeAge(birthDate)));
+            foreach (var fEvent in family.Events)
+            {
+                var eventLinks = new List<ILink>(familyLinks);
+                eventLinks.AddRange(fEvent.Event.Sources.Select(x => new SourceReference(x.Name, GetSourceUrl(x.Id))));
+
+                var item = new TimelineItem
+                {
+                    EventId = fEvent.EventId,
+                    Name = fEvent.Event.Name ?? fEvent.Event.Type.GetDisplayName(),
+                    Type = fEvent.Event.Type,
+                    Date = fEvent.Date ?? fEvent.Event.Date,
+                    Location = fEvent.Event.Location,
+                    Links = eventLinks
+                }.SetRelativeAge(birthDate);
+                items.Add(item);
+            }
         }
 
         items.Sort(new TimelineItemSorter());
@@ -393,4 +416,9 @@ public class PersonController : Controller
             return x.Name.CompareTo(y.Name);
         }
     }
+
+    private record BirthDateCacheKey() : CacheKey;
+    private record DeathDatesCacheKey() : CacheKey;
+    private record GetParentCacheKey(Guid Id, PersonSex Sex) : CacheKey;
+    private record ParentPersonTreeNodeCacheKey(Guid Id) : CacheKey;
 }

@@ -1,0 +1,19 @@
+﻿.source {
+    display: flex;
+    gap: 3rem;
+}
+
+dl {
+    line-height: 1.1;
+}
+
+.media-items {
+}
+
+    .media-items .media-item {
+        max-width: 25rem;
+    }
+
+        .media-items .media-item .title {
+            font-weight: 600;
+        }
