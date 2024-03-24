@@ -30,6 +30,7 @@ public static class InfrastructureExtensions
                 
         services.AddSingleton<IAuthService, AuthService>();
         services.AddScoped<ICache, CacheManager>();
+        services.AddSingleton<IMediaHandler, MediaHandler>();
 
         return services;
     }

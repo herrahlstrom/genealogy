@@ -52,7 +52,7 @@
         {
             <div class="media-item">
                 <div class="title">@media.Title</div>
-                <partial name="_ModalImage" model="@(new ModalImageViewModel(@media.Title, @media.Url, @media.Url))" />
+                <partial name="_ModalImage" model="@(new ModalImageViewModel(@media.Title, @media.ThumbnailUrl, @media.FullSizeUrl))" />
                 <div class="notes">@media.Notes</div>
             </div>
 

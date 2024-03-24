@@ -82,7 +82,7 @@ public class PersonController : Controller
                                     p.Sex,
                                     p.Profession,
                                     p.Notes,
-                                    Media = p.Media.OrderBy(x=> x.Title).Select(x => new { x.Id, x.Title, x.Path, x.Notes}).ToList()
+                                    Media = p.Media.OrderBy(x => x.Title).Select(x => new { x.Id, x.Title, x.Path, x.Notes }).ToList()
                                 }).FirstOrDefaultAsync() ?? throw PersonNotFoundException.Create(id);
 
             var timelineItems = await GetTimelineItems(id);
@@ -106,7 +106,8 @@ public class PersonController : Controller
                 {
                     Id = m.Id,
                     Title = m.Title ?? "",
-                    Url = Url.Action(controller: "Media", action: "Media", values: new { m.Id, filename = m.Title }) ?? throw new UnreachableException(),
+                    ThumbnailUrl = Url.Action(controller: "Media", action: "Thumbnail", values: new { id = m.Id, filename = m.Title, maxHeight = 120, maxWidth = 200 }) ?? throw new UnreachableException(),
+                    FullSizeUrl = Url.Action(controller: "Media", action: "Media", values: new { id = m.Id, filename = m.Title }) ?? throw new UnreachableException(),
                     Notes = m.Notes ?? ""
                 }).ToList(),
             };

@@ -47,8 +47,9 @@ public class SourceController : Controller
                 Media = source.Media.Select(m => new MediaViewModel
                 {
                     Id = m.Id,
-                    Title = m.Title ?? "",
-                    Url = Url.Action(controller: "Media", action: "Media", values: new { m.Id, filename = m.Title }) ?? throw new UnreachableException(),
+                    Title = m.Title ?? "",                    
+                    ThumbnailUrl = Url.Action(controller: "Media", action: "Thumbnail", values: new { m.Id, filename = m.Title, maxHeight = 120, maxWidth = 200 }) ?? throw new UnreachableException(),
+                    FullSizeUrl = Url.Action(controller: "Media", action: "Media", values: new { m.Id, filename = m.Title }) ?? throw new UnreachableException(),
                     Notes = m.Notes ?? ""
                 }).ToList(),
             };

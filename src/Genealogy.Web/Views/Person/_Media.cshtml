@@ -5,7 +5,7 @@
     @foreach (var media in @Model)
     {
         <div class="media-item">
-            <partial name="_ModalImage" model="@(new ModalImageViewModel(@media.Title, @media.Url, @media.Url))" />
+            <partial name="_ModalImage" model="@(new ModalImageViewModel(@media.Title, @media.ThumbnailUrl, @media.FullSizeUrl))" />
         </div>
 
     }
