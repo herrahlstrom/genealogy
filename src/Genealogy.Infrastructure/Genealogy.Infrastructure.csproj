@@ -5,6 +5,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Genealogy.Application\Genealogy.Application.csproj" />
         <ProjectReference Include="..\Genealogy.Domain\Genealogy.Domain.csproj" />
         <ProjectReference Include="..\Genealogy.Infrastructure.Data\Genealogy.Infrastructure.Data.csproj" />
         <ProjectReference Include="..\Genealogy.Shared\Genealogy.Shared.csproj" />

@@ -7,7 +7,6 @@ using System.Globalization;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddGenealogyOptions(builder.Configuration);
-builder.Services.AddMemoryCache();
 builder.Services.AddServices();
 builder.Services.AddAuth();
 

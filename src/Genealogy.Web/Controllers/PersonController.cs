@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Genealogy.Api.Auth;
+using Genealogy.Application;
 using Genealogy.Domain.Entities;
 using Genealogy.Infrastructure.Data;
 using Genealogy.Shared.Exceptions;
@@ -17,10 +18,10 @@ namespace Genealogy.Web.Controllers;
 [Authorize(Policies.CanRead)]
 public class PersonController : Controller
 {
-    private readonly ICacheControl _cache;
+    private readonly ICache _cache;
     private readonly GenealogyDbContext _dbContext;
 
-    public PersonController(GenealogyDbContext dbContext, ICacheControl cache)
+    public PersonController(GenealogyDbContext dbContext, ICache cache)
     {
         _cache = cache;
         _dbContext = dbContext;

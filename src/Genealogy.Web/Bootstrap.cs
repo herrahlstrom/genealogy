@@ -36,7 +36,7 @@ public static class Bootstrap
 
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<ICacheControl, CacheControl>();
+        services.AddMemoryCache();
 
         return services;
     }

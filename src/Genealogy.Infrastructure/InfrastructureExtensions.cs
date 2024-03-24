@@ -1,4 +1,5 @@
-﻿using Genealogy.Domain;
+﻿using Genealogy.Application;
+using Genealogy.Domain;
 using Genealogy.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,7 @@ public static class InfrastructureExtensions
         }
                 
         services.AddSingleton<IAuthService, AuthService>();
+        services.AddScoped<ICache, CacheManager>();
 
         return services;
     }

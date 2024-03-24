@@ -1,4 +1,5 @@
-﻿using Genealogy.Infrastructure.Data;
+﻿using Genealogy.Application;
+using Genealogy.Infrastructure.Data;
 using Genealogy.Shared.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,11 @@ namespace Genealogy.Web;
 [Route("media")]
 public class MediaController : Controller
 {
-    private readonly ICacheControl _cache;
+    private readonly ICache _cache;
     private readonly GenealogyDbContext _dbContext;
     private readonly MediaOptions _options;
 
-    public MediaController(GenealogyDbContext dbContext, ICacheControl cache, IOptions<MediaOptions> options)
+    public MediaController(GenealogyDbContext dbContext, ICache cache, IOptions<MediaOptions> options)
     {
         _dbContext = dbContext;
         _cache = cache;
@@ -30,7 +31,7 @@ public class MediaController : Controller
         try
         {
             var data = await _cache.GetOrCreateAsync(
-                new MediaDataCacheKey(id),
+                key: new MediaDataCacheKey(id),
                 cacheLifetime: TimeSpan.FromMinutes(15),
                 valueFactory: ct => (from media in _dbContext.Media
                                      where media.Id == id
